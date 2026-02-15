@@ -14,17 +14,14 @@ function buildTilePool(): string[] {
   return pool;
 }
 
-function pickRandomTiles(count: number): string[] {
-  const pool = buildTilePool();
-  const tiles: string[] = [];
-
-  for (let i = 0; i < count; i++) {
+function drawFromPool(pool: string[], count: number): string[] {
+  const drawn: string[] = [];
+  for (let i = 0; i < count && pool.length > 0; i++) {
     const idx = Math.floor(Math.random() * pool.length);
-    tiles.push(pool[idx]);
+    drawn.push(pool[idx]);
     pool.splice(idx, 1);
   }
-
-  return tiles;
+  return drawn;
 }
 
 function toRowCol(index: number) {
@@ -39,14 +36,22 @@ function isNeighbor(a: number, b: number): boolean {
   return dRow <= 1 && dCol <= 1 && !(dRow === 0 && dCol === 0);
 }
 
+function initGrid() {
+  const pool = buildTilePool();
+  const tiles = drawFromPool(pool, GRID_SIZE * GRID_SIZE);
+  return { tiles, pool };
+}
+
 export default function Grid() {
   const [score, setScore] = useState(0);
-  const tiles = useMemo(() => pickRandomTiles(GRID_SIZE * GRID_SIZE), []);
+  const [{ tiles, pool }] = useState(initGrid);
+  const [gridTiles, setGridTiles] = useState<(string | null)[]>(tiles);
+  const poolRef = useRef(pool);
   const [selected, setSelected] = useState<number[]>([]);
   const isDragging = useRef(false);
   const { ready, isValidWord } = useDictionary();
 
-  const selectedWord = selected.map((i) => tiles[i]).join("");
+  const selectedWord = selected.map((i) => gridTiles[i]).join("");
   const isValid = selectedWord.length >= 2 && isValidWord(selectedWord);
 
   const letterScore = useMemo(() => {
@@ -58,28 +63,25 @@ export default function Grid() {
   const selectTile = useCallback(
     (index: number) => {
       setSelected((prev) => {
-        // If already selected, allow deselecting back by tapping the previous tile
+        if (gridTiles[index] === null) return prev;
+
         const prevIndex = prev.indexOf(index);
         if (prevIndex !== -1) {
-          // Tapping the second-to-last tile backtracks the selection
           if (prevIndex === prev.length - 2) {
             return prev.slice(0, -1);
           }
-          // Tapping an already-selected tile that isn't the penultimate — ignore
           return prev;
         }
 
-        // First tile — always allowed
         if (prev.length === 0) return [index];
 
-        // Must be a neighbor of the last selected tile
         const last = prev[prev.length - 1];
         if (!isNeighbor(last, index)) return prev;
 
         return [...prev, index];
       });
     },
-    [setSelected],
+    [gridTiles],
   );
 
   const handlePointerDown = useCallback(
@@ -105,9 +107,21 @@ export default function Grid() {
 
   const handleSubmit = useCallback(() => {
     if (!isValid) return;
-    setScore(score + selectedWord.length * letterScore);
+
+    setScore((prev) => prev + selectedWord.length * letterScore);
+
+    const replacements = drawFromPool(poolRef.current, selected.length);
+
+    setGridTiles((prev) => {
+      const next = [...prev];
+      selected.forEach((gridIndex, i) => {
+        next[gridIndex] = i < replacements.length ? replacements[i] : null;
+      });
+      return next;
+    });
+
     setSelected([]);
-  }, [isValid, selectedWord, score, letterScore]);
+  }, [isValid, selectedWord, letterScore, selected]);
 
   return (
     <div className="flex flex-col items-center gap-6 text-white">
@@ -137,7 +151,16 @@ export default function Grid() {
         onPointerUp={handlePointerUp}
         onPointerLeave={handlePointerUp}
       >
-        {tiles.map((letter, i) => {
+        {gridTiles.map((letter, i) => {
+          if (letter === null) {
+            return (
+              <div
+                key={i}
+                className="flex h-16 w-16 items-center justify-center rounded-lg bg-zinc-900/50"
+              />
+            );
+          }
+
           const { points } =
             STARTING_TILES[letter as keyof typeof STARTING_TILES];
           const isSelected = selected.includes(i);
