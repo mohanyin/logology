@@ -1,0 +1,5 @@
+---
+alwaysApply: true
+---
+
+- Always use absolute imports with the @/ alias (which is aliased to ./src)

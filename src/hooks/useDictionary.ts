@@ -1,8 +1,14 @@
-import { useEffect, useRef, useState } from "react";
+import { useCallback, useEffect, useRef, useState } from "react";
 import initSqlJs, { type Database } from "sql.js";
 
 // sql.js needs the WASM binary — point it at the CDN build matching our version
 const SQL_WASM_URL = "https://sql.js.org/dist/sql-wasm.wasm";
+
+export type WordData = {
+  pos: string[];
+  tags: string[];
+  pronunciations: string[];
+};
 
 export function useDictionary() {
   const dbRef = useRef<Database | null>(null);
@@ -34,7 +40,7 @@ export function useDictionary() {
     };
   }, []);
 
-  function isValidWord(word: string): boolean {
+  const isValidWord = useCallback((word: string): boolean => {
     if (!dbRef.current || word.length < 2) return false;
 
     const stmt = dbRef.current.prepare(
@@ -45,7 +51,30 @@ export function useDictionary() {
     stmt.free();
 
     return found;
-  }
+  }, []);
 
-  return { ready, isValidWord };
+  const lookupWord = useCallback((word: string): WordData | null => {
+    if (!dbRef.current || word.length < 2) return null;
+
+    const stmt = dbRef.current.prepare(
+      "SELECT pos, pronunciations, tags FROM dictionary WHERE word = ? LIMIT 1",
+    );
+    stmt.bind([word.toUpperCase()]);
+
+    if (!stmt.step()) {
+      stmt.free();
+      return null;
+    }
+
+    const row = stmt.get();
+    stmt.free();
+
+    const pos: string[] = row[0] ? JSON.parse(row[0] as string) : [];
+    const pronunciations: string[] = row[1] ? JSON.parse(row[1] as string) : [];
+    const tags: string[] = row[2] ? JSON.parse(row[2] as string) : [];
+
+    return { pos, tags, pronunciations };
+  }, []);
+
+  return { ready, isValidWord, lookupWord };
 }

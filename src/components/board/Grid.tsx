@@ -2,7 +2,10 @@ import { useCallback, useMemo, useRef, useState } from "react";
 import { STARTING_TILES } from "@/utils/constants";
 import { useDictionary } from "@/hooks/useDictionary";
 import { useAtom } from "jotai";
-import { goalAtom } from "@/atoms/game";
+import { goalAtom, playedWordsAtom, powerupsAtom } from "@/atoms/game";
+import { scoreWord } from "@/utils/scoring";
+import { hasSound } from "@/utils/sounds";
+import type { GameContext } from "@/types/powerups";
 
 const GRID_SIZE = 5;
 
@@ -51,18 +54,65 @@ export default function Grid() {
   const poolRef = useRef(pool);
   const [selected, setSelected] = useState<number[]>([]);
   const isDragging = useRef(false);
-  const { ready, isValidWord } = useDictionary();
+  const { ready, isValidWord, lookupWord } = useDictionary();
 
   const [goal] = useAtom(goalAtom);
+  const [powerups] = useAtom(powerupsAtom);
+  const [playedWords, setPlayedWords] = useAtom(playedWordsAtom);
 
   const selectedWord = selected.map((i) => gridTiles[i]).join("");
   const isValid = selectedWord.length >= 2 && isValidWord(selectedWord);
 
-  const letterScore = useMemo(() => {
-    return selectedWord.split("").reduce((acc, letter) => {
-      return acc + STARTING_TILES[letter as keyof typeof STARTING_TILES].points;
-    }, 0);
-  }, [selectedWord]);
+  const selectedTiles = useMemo(() => {
+    return selected.map((i) => {
+      const letter = gridTiles[i]!;
+      return {
+        letter,
+        points: STARTING_TILES[letter as keyof typeof STARTING_TILES].points,
+      };
+    });
+  }, [selected, gridTiles]);
+
+  const wordData = useMemo(() => {
+    if (!isValid) return null;
+    return lookupWord(selectedWord);
+  }, [isValid, selectedWord, lookupWord]);
+
+  const buildGameContext = useCallback(
+    (currentMultiplier: number): GameContext => {
+      const pos = wordData?.pos ?? [];
+      const tags = wordData?.tags ?? [];
+      const pronunciations = wordData?.pronunciations ?? [];
+
+      return {
+        currentWord: {
+          word: selectedWord,
+          length: selectedWord.length,
+          multiplier: currentMultiplier,
+          isNoun: pos.includes("noun"),
+          isVerb: pos.includes("verb"),
+          isAdjective: pos.includes("adj"),
+          isAdverb: pos.includes("adv"),
+          isPastTense: tags.includes("past"),
+          isGerund: tags.includes("gerund"),
+          partsOfSpeech: pos,
+          hasSound: (sound: string) => hasSound(pronunciations, sound),
+        },
+        playedWords,
+        character: { gold: 0, powerups },
+        isValidWord,
+      };
+    },
+    [selectedWord, wordData, playedWords, powerups, isValidWord],
+  );
+
+  const scoringResult = useMemo(() => {
+    if (!isValid || selectedTiles.length === 0) {
+      return { totalScore: 0, basePoints: 0, multiplier: 1 };
+    }
+    const ctx = buildGameContext(1);
+    return scoreWord(selectedTiles, powerups, ctx);
+  }, [isValid, selectedTiles, powerups, buildGameContext]);
 
   const selectTile = useCallback(
     (index: number) => {
@@ -112,7 +162,8 @@ export default function Grid() {
   const handleSubmit = useCallback(() => {
     if (!isValid) return;
 
-    setScore((prev) => prev + selectedWord.length * letterScore);
+    setScore((prev) => prev + scoringResult.totalScore);
+    setPlayedWords((prev) => [...prev, selectedWord]);
 
     const replacements = drawFromPool(poolRef.current, selected.length);
 
@@ -125,17 +176,21 @@ export default function Grid() {
     });
 
     setSelected([]);
-  }, [isValid, selectedWord, letterScore, selected]);
+  }, [
+    isValid,
+    scoringResult.totalScore,
+    selectedWord,
+    selected,
+    setPlayedWords,
+  ]);
 
   return (
     <div className="flex flex-col items-center gap-6 text-white">
       <div className="text-2xl font-bold">
         {score} / {goal}
       </div>
-      <div className="text-2xl font-bold">{`${selectedWord.length} x ${letterScore}`}</div>
-      <div className="text-2xl font-bold">
-        {selectedWord.length * letterScore}
-      </div>
+      <div className="text-2xl font-bold">{`${scoringResult.basePoints} x ${scoringResult.multiplier}`}</div>
+      <div className="text-2xl font-bold">{scoringResult.totalScore}</div>
       <div
         className={`flex min-h-12 min-w-48 items-center justify-center rounded-lg px-6 py-2 text-center text-2xl font-bold tracking-widest transition-colors ${
           selectedWord.length === 0
