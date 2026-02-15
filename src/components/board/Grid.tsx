@@ -1,6 +1,8 @@
 import { useCallback, useMemo, useRef, useState } from "react";
 import { STARTING_TILES } from "@/utils/constants";
 import { useDictionary } from "@/hooks/useDictionary";
+import { useAtom } from "jotai";
+import { goalAtom } from "@/atoms/game";
 
 const GRID_SIZE = 5;
 
@@ -50,6 +52,8 @@ export default function Grid() {
   const [selected, setSelected] = useState<number[]>([]);
   const isDragging = useRef(false);
   const { ready, isValidWord } = useDictionary();
+
+  const [goal] = useAtom(goalAtom);
 
   const selectedWord = selected.map((i) => gridTiles[i]).join("");
   const isValid = selectedWord.length >= 2 && isValidWord(selectedWord);
@@ -125,15 +129,20 @@ export default function Grid() {
 
   return (
     <div className="flex flex-col items-center gap-6 text-white">
+      <div className="text-2xl font-bold">
+        {score} / {goal}
+      </div>
       <div className="text-2xl font-bold">{`${selectedWord.length} x ${letterScore}`}</div>
-      <div className="text-2xl font-bold">{score}</div>
+      <div className="text-2xl font-bold">
+        {selectedWord.length * letterScore}
+      </div>
       <div
         className={`flex min-h-12 min-w-48 items-center justify-center rounded-lg px-6 py-2 text-center text-2xl font-bold tracking-widest transition-colors ${
           selectedWord.length === 0
-            ? "bg-zinc-900 text-white"
+            ? "bg-blue-medium text-white"
             : isValid
-              ? "bg-emerald-600 text-white"
-              : "bg-zinc-900 text-zinc-500"
+              ? "bg-green-medium text-white"
+              : "bg-blue-medium text-white"
         }`}
         aria-live="polite"
       >
@@ -195,6 +204,7 @@ export default function Grid() {
       >
         Submit
       </button>
+      <button onClick={() => setSelected([])}>Clear</button>
     </div>
   );
 }

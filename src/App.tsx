@@ -2,7 +2,7 @@ import Grid from "@/components/board/Grid";
 
 function App() {
   return (
-    <div className="flex min-h-screen items-center justify-center bg-zinc-950">
+    <div className="bg-neutral-light flex min-h-screen items-center justify-center">
       <Grid />
     </div>
   );
