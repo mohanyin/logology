@@ -1,12 +1,12 @@
 import { BASE_GOAL_SCORE, SCORE_SCALING_FACTOR } from "@/utils/constants";
 import { atom } from "jotai";
 import type { Powerup } from "@/types/powerups";
-import { createAllPowerups } from "@/powerups";
+import createMe from "@/powerups/me";
 
 export const roundAtom = atom(0);
 
 /** Active powerups for the current game. Hardcoded for now. */
-export const powerupsAtom = atom<Powerup[]>(createAllPowerups());
+export const powerupsAtom = atom<Powerup[]>([createMe()]);
 
 /** Words played so far in the current challenge. */
 export const playedWordsAtom = atom<string[]>([]);
