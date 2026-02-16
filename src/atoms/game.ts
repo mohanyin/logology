@@ -1,9 +1,17 @@
-import { BASE_GOAL_SCORE, SCORE_SCALING_FACTOR } from "@/utils/constants";
+import {
+  BASE_GOAL_SCORE,
+  SCORE_SCALING_FACTOR,
+  STARTING_GOLD,
+} from "@/utils/constants";
 import { atom } from "jotai";
 import type { Powerup } from "@/types/powerups";
 import createMe from "@/powerups/me";
 
 export const roundAtom = atom(0);
+
+export const scoreAtom = atom(0);
+
+export const goldAtom = atom(STARTING_GOLD);
 
 /** Active powerups for the current game. Hardcoded for now. */
 export const powerupsAtom = atom<Powerup[]>([createMe()]);

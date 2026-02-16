@@ -1,8 +1,15 @@
 import { useCallback, useMemo, useRef, useState } from "react";
-import { STARTING_TILES } from "@/utils/constants";
+import { useNavigate } from "@tanstack/react-router";
+import { GOLD_PER_CHALLENGE, STARTING_TILES } from "@/utils/constants";
 import { useDictionary } from "@/hooks/useDictionary";
 import { useAtom } from "jotai";
-import { goalAtom, playedWordsAtom, powerupsAtom } from "@/atoms/game";
+import {
+  goalAtom,
+  goldAtom,
+  playedWordsAtom,
+  powerupsAtom,
+  scoreAtom,
+} from "@/atoms/game";
 import { scoreWord } from "@/utils/scoring";
 import { hasSound } from "@/utils/sounds";
 import type { GameContext } from "@/types/powerups";
@@ -48,7 +55,7 @@ function initGrid() {
 }
 
 export default function Grid() {
-  const [score, setScore] = useState(0);
+  const [score, setScore] = useAtom(scoreAtom);
   const [{ tiles, pool }] = useState(initGrid);
   const [gridTiles, setGridTiles] = useState<(string | null)[]>(tiles);
   const poolRef = useRef(pool);
@@ -59,6 +66,8 @@ export default function Grid() {
   const [goal] = useAtom(goalAtom);
   const [powerups] = useAtom(powerupsAtom);
   const [playedWords, setPlayedWords] = useAtom(playedWordsAtom);
+  const [, setGold] = useAtom(goldAtom);
+  const navigate = useNavigate();
 
   const selectedWord = selected.map((i) => gridTiles[i]).join("");
   const isValid = selectedWord.length >= 2 && isValidWord(selectedWord);
@@ -162,7 +171,8 @@ export default function Grid() {
   const handleSubmit = useCallback(() => {
     if (!isValid) return;
 
-    setScore((prev) => prev + scoringResult.totalScore);
+    const newScore = score + scoringResult.totalScore;
+    setScore(newScore);
     setPlayedWords((prev) => [...prev, selectedWord]);
 
     const replacements = drawFromPool(poolRef.current, selected.length);
@@ -176,12 +186,22 @@ export default function Grid() {
     });
 
     setSelected([]);
+
+    if (newScore >= goal) {
+      setGold((prev) => prev + GOLD_PER_CHALLENGE);
+      navigate({ to: "/shop" });
+    }
   }, [
     isValid,
+    score,
     scoringResult.totalScore,
     selectedWord,
     selected,
+    goal,
+    setScore,
     setPlayedWords,
+    setGold,
+    navigate,
   ]);
 
   return (
