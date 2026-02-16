@@ -1,5 +1,6 @@
 import {
   BASE_GOAL_SCORE,
+  BASE_ROUND_COUNT,
   SCORE_SCALING_FACTOR,
   STARTING_GOLD,
 } from "@/utils/constants";
@@ -10,6 +11,8 @@ import { createStartingTiles } from "@/utils/tiles";
 export const roundAtom = atom(0);
 
 export const scoreAtom = atom(0);
+
+export const wordsRemainingAtom = atom(BASE_ROUND_COUNT);
 
 export const goldAtom = atom(STARTING_GOLD);
 

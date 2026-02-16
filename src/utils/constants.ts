@@ -1,5 +1,3 @@
-export const BASE_BOARD_LOCATIONS_COUNT = 8;
-export const BASE_TILES_COUNT = 9;
 export const BASE_ROUND_COUNT = 4;
 
 export const BASE_GOAL_SCORE = 200;

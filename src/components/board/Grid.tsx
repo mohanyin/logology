@@ -10,6 +10,7 @@ import {
   powerupsAtom,
   scoreAtom,
   tilesAtom,
+  wordsRemainingAtom,
 } from "@/atoms/game";
 import { scoreWord } from "@/utils/scoring";
 import { hasSound } from "@/utils/sounds";
@@ -139,6 +140,7 @@ export default function Grid() {
     isDragging.current = false;
   }, []);
 
+  const [wordsRemaining, setWordsRemaining] = useAtom(wordsRemainingAtom);
   const handleSubmit = () => {
     if (!isValid) return;
 
@@ -155,6 +157,8 @@ export default function Grid() {
     });
     setNextTile((nextTile) => nextTile + selected.length);
     setSelected([]);
+
+    setWordsRemaining((wordsRemaining) => wordsRemaining - 1);
 
     if (newScore >= goal) {
       setGold((prev) => prev + GOLD_PER_CHALLENGE);
@@ -248,7 +252,7 @@ export default function Grid() {
         className="bg-green-dark text-green-light block w-full rounded-lg px-4 py-2 font-bold uppercase"
         onClick={handleSubmit}
       >
-        Submit
+        Submit ({wordsRemaining} left)
       </button>
       <button className="text-neutral-black" onClick={() => setSelected([])}>
         Clear
