@@ -1,9 +1,9 @@
 import type { Powerup } from "@/types/powerups";
 import { NO_EFFECT } from "@/types/powerups";
-import { STARTING_TILES } from "@/utils/constants";
+import { STARTING_TILE_CONFIG } from "@/utils/tiles";
 
 export default function createPickpocket(): Powerup {
-  const allLetters = Object.keys(STARTING_TILES);
+  const allLetters = Object.keys(STARTING_TILE_CONFIG);
   let bonusLetter = "D";
 
   function pickBonusLetter(): string {

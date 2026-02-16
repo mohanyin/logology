@@ -6,7 +6,7 @@ export function scoreWord(
   ctx: GameContext,
 ): { totalScore: number; basePoints: number; multiplier: number } {
   let basePoints = 0;
-  let multiplier = 1;
+  let multiplier = tiles.length;
 
   // 1. Apply starting bonuses
   for (const p of powerups) {

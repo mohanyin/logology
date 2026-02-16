@@ -1,6 +1,6 @@
 import { useCallback, useMemo, useRef, useState } from "react";
 import { useNavigate } from "@tanstack/react-router";
-import { GOLD_PER_CHALLENGE, STARTING_TILES } from "@/utils/constants";
+import { GOLD_PER_CHALLENGE } from "@/utils/constants";
 import { useDictionary } from "@/hooks/useDictionary";
 import { useAtom } from "jotai";
 import {
@@ -9,57 +9,32 @@ import {
   playedWordsAtom,
   powerupsAtom,
   scoreAtom,
+  tilesAtom,
 } from "@/atoms/game";
 import { scoreWord } from "@/utils/scoring";
 import { hasSound } from "@/utils/sounds";
 import type { GameContext } from "@/types/powerups";
+import { type Tile } from "@/utils/tiles";
 
 const GRID_SIZE = 4;
 
-function buildTilePool(): string[] {
-  const pool: string[] = [];
-  for (const [letter, { count }] of Object.entries(STARTING_TILES)) {
-    for (let i = 0; i < count; i++) {
-      pool.push(letter);
-    }
-  }
-  return pool;
-}
-
-function drawFromPool(pool: string[], count: number): string[] {
-  const drawn: string[] = [];
-  for (let i = 0; i < count && pool.length > 0; i++) {
-    const idx = Math.floor(Math.random() * pool.length);
-    drawn.push(pool[idx]);
-    pool.splice(idx, 1);
-  }
-  return drawn;
-}
-
-function toRowCol(index: number) {
-  return { row: Math.floor(index / GRID_SIZE), col: index % GRID_SIZE };
-}
-
-function isNeighbor(a: number, b: number): boolean {
-  const posA = toRowCol(a);
-  const posB = toRowCol(b);
-  const dRow = Math.abs(posA.row - posB.row);
-  const dCol = Math.abs(posA.col - posB.col);
+function isNeighbor(a: [number, number], b: [number, number]): boolean {
+  const dRow = Math.abs(a[0] - b[0]);
+  const dCol = Math.abs(a[1] - b[1]);
   return dRow <= 1 && dCol <= 1 && !(dRow === 0 && dCol === 0);
 }
 
-function initGrid() {
-  const pool = buildTilePool();
-  const tiles = drawFromPool(pool, GRID_SIZE * GRID_SIZE);
-  return { tiles, pool };
-}
-
 export default function Grid() {
+  const [tiles] = useAtom(tilesAtom);
+  const [board, setBoard] = useState<(Tile | null)[][]>(
+    Array.from({ length: GRID_SIZE }, (_, i) =>
+      Array.from({ length: GRID_SIZE }, (_, j) => tiles[4 * i + j]),
+    ),
+  );
+  const [nextTile, setNextTile] = useState(GRID_SIZE * GRID_SIZE);
+
   const [score, setScore] = useAtom(scoreAtom);
-  const [{ tiles, pool }] = useState(initGrid);
-  const [gridTiles, setGridTiles] = useState<(string | null)[]>(tiles);
-  const poolRef = useRef(pool);
-  const [selected, setSelected] = useState<number[]>([]);
+  const [selected, setSelected] = useState<[number, number][]>([]);
   const isDragging = useRef(false);
   const { ready, isValidWord, lookupWord } = useDictionary();
 
@@ -69,18 +44,12 @@ export default function Grid() {
   const [, setGold] = useAtom(goldAtom);
   const navigate = useNavigate();
 
-  const selectedWord = selected.map((i) => gridTiles[i]).join("");
+  const selectedWord = selected.map(([i, j]) => board[i][j]?.letter).join("");
   const isValid = selectedWord.length >= 2 && isValidWord(selectedWord);
 
   const selectedTiles = useMemo(() => {
-    return selected.map((i) => {
-      const letter = gridTiles[i]!;
-      return {
-        letter,
-        points: STARTING_TILES[letter as keyof typeof STARTING_TILES].points,
-      };
-    });
-  }, [selected, gridTiles]);
+    return selected.map(([i, j]) => board[i][j]) as Tile[];
+  }, [selected, board]);
 
   const wordData = useMemo(() => {
     if (!isValid) return null;
@@ -124,11 +93,15 @@ export default function Grid() {
   }, [isValid, selectedTiles, powerups, buildGameContext]);
 
   const selectTile = useCallback(
-    (index: number) => {
+    (tileCoords: [number, number]) => {
       setSelected((prev) => {
-        if (gridTiles[index] === null) return prev;
+        const [i, j] = tileCoords;
 
-        const prevIndex = prev.indexOf(index);
+        if (board[i][j] === null) return prev;
+
+        if (prev.length === 0) return [tileCoords];
+
+        const prevIndex = prev.indexOf(tileCoords);
         if (prevIndex !== -1) {
           if (prevIndex === prev.length - 2) {
             return prev.slice(0, -1);
@@ -136,30 +109,28 @@ export default function Grid() {
           return prev;
         }
 
-        if (prev.length === 0) return [index];
-
         const last = prev[prev.length - 1];
-        if (!isNeighbor(last, index)) return prev;
+        if (!isNeighbor(last, tileCoords)) return prev;
 
-        return [...prev, index];
+        return [...prev, [i, j]];
       });
     },
-    [gridTiles],
+    [board],
   );
 
   const handlePointerDown = useCallback(
-    (index: number) => {
+    (tileCoords: [number, number]) => {
       isDragging.current = true;
       setSelected([]);
-      selectTile(index);
+      selectTile(tileCoords);
     },
     [selectTile],
   );
 
   const handlePointerEnter = useCallback(
-    (index: number) => {
+    (tileCoords: [number, number]) => {
       if (!isDragging.current) return;
-      selectTile(index);
+      selectTile(tileCoords);
     },
     [selectTile],
   );
@@ -168,41 +139,28 @@ export default function Grid() {
     isDragging.current = false;
   }, []);
 
-  const handleSubmit = useCallback(() => {
+  const handleSubmit = () => {
     if (!isValid) return;
 
     const newScore = score + scoringResult.totalScore;
     setScore(newScore);
     setPlayedWords((prev) => [...prev, selectedWord]);
 
-    const replacements = drawFromPool(poolRef.current, selected.length);
-
-    setGridTiles((prev) => {
-      const next = [...prev];
-      selected.forEach((gridIndex, i) => {
-        next[gridIndex] = i < replacements.length ? replacements[i] : null;
+    setBoard((board) => {
+      const next = board.map((row) => [...row]);
+      selected.forEach(([i, j], index) => {
+        next[i][j] = tiles[nextTile + index] ?? null;
       });
       return next;
     });
-
+    setNextTile((nextTile) => nextTile + selected.length);
     setSelected([]);
 
     if (newScore >= goal) {
       setGold((prev) => prev + GOLD_PER_CHALLENGE);
       navigate({ to: "/shop" });
     }
-  }, [
-    isValid,
-    score,
-    scoringResult.totalScore,
-    selectedWord,
-    selected,
-    goal,
-    setScore,
-    setPlayedWords,
-    setGold,
-    navigate,
-  ]);
+  };
 
   return (
     <div className="text-neutral-white flex flex-col items-center gap-6">
@@ -247,37 +205,42 @@ export default function Grid() {
         onPointerUp={handlePointerUp}
         onPointerLeave={handlePointerUp}
       >
-        {gridTiles.map((letter, i) => {
-          if (letter === null) {
+        {board.map((row, i) => {
+          return row.map((tile, j) => {
+            if (tile === null) {
+              return (
+                <div
+                  key={`${i}-${j}`}
+                  className="bg-blue-medium flex size-16 items-center justify-center rounded-lg"
+                >
+                  {i}
+                  {j}
+                </div>
+              );
+            }
+
+            const isSelected = selected.some(
+              ([selectedI, selectedJ]) => i === selectedI && j === selectedJ,
+            );
+
             return (
               <div
-                key={i}
-                className="bg-blue-medium flex size-16 items-center justify-center rounded-lg"
-              />
+                key={`${i}-${j}`}
+                onPointerDown={() => handlePointerDown([i, j])}
+                onPointerEnter={() => handlePointerEnter([i, j])}
+                className={`bg-blue-medium text-neutral-white relative flex h-16 w-16 cursor-pointer items-center justify-center rounded-lg text-2xl font-bold transition-colors select-none ${
+                  isSelected
+                    ? "ring-blue-dark ring-2 ring-offset-2"
+                    : "hover:bg-blue-dark"
+                }`}
+              >
+                <span>{tile.letter}</span>
+                <span className="absolute bottom-1 text-[10px] font-normal text-zinc-400">
+                  {tile.points}
+                </span>
+              </div>
             );
-          }
-
-          const { points } =
-            STARTING_TILES[letter as keyof typeof STARTING_TILES];
-          const isSelected = selected.includes(i);
-
-          return (
-            <div
-              key={i}
-              onPointerDown={() => handlePointerDown(i)}
-              onPointerEnter={() => handlePointerEnter(i)}
-              className={`bg-blue-medium text-neutral-white relative flex h-16 w-16 cursor-pointer items-center justify-center rounded-lg text-2xl font-bold transition-colors select-none ${
-                isSelected
-                  ? "ring-blue-dark ring-2 ring-offset-2"
-                  : "hover:bg-blue-dark"
-              }`}
-            >
-              <span>{letter}</span>
-              <span className="absolute bottom-1 text-[10px] font-normal text-zinc-400">
-                {points}
-              </span>
-            </div>
-          );
+          });
         })}
       </div>
 

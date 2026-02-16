@@ -5,7 +5,7 @@ import {
 } from "@/utils/constants";
 import { atom } from "jotai";
 import type { Powerup } from "@/types/powerups";
-import createMe from "@/powerups/me";
+import { createStartingTiles } from "@/utils/tiles";
 
 export const roundAtom = atom(0);
 
@@ -13,8 +13,15 @@ export const scoreAtom = atom(0);
 
 export const goldAtom = atom(STARTING_GOLD);
 
+export const tilesAtom = atom(createStartingTiles());
+
+export const remainingTilesAtom = atom((get) => {
+  const tiles = get(tilesAtom);
+  return tiles.length;
+});
+
 /** Active powerups for the current game. Hardcoded for now. */
-export const powerupsAtom = atom<Powerup[]>([createMe()]);
+export const powerupsAtom = atom<Powerup[]>([]);
 
 /** Words played so far in the current challenge. */
 export const playedWordsAtom = atom<string[]>([]);
