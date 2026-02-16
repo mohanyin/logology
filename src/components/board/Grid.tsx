@@ -14,7 +14,7 @@ import { scoreWord } from "@/utils/scoring";
 import { hasSound } from "@/utils/sounds";
 import type { GameContext } from "@/types/powerups";
 
-const GRID_SIZE = 5;
+const GRID_SIZE = 4;
 
 function buildTilePool(): string[] {
   const pool: string[] = [];
@@ -117,7 +117,7 @@ export default function Grid() {
 
   const scoringResult = useMemo(() => {
     if (!isValid || selectedTiles.length === 0) {
-      return { totalScore: 0, basePoints: 0, multiplier: 1 };
+      return { totalScore: 0, basePoints: 0, multiplier: 0 };
     }
     const ctx = buildGameContext(1);
     return scoreWord(selectedTiles, powerups, ctx);
@@ -205,19 +205,31 @@ export default function Grid() {
   ]);
 
   return (
-    <div className="flex flex-col items-center gap-6 text-white">
-      <div className="text-2xl font-bold">
-        {score} / {goal}
+    <div className="text-neutral-white flex flex-col items-center gap-6">
+      <div className="flex w-full gap-2">
+        <div className="text-neutral-black font-family-display text-2xl font-bold">
+          Score: {score}
+        </div>
+        <div className="text-neutral-x-dark"> / </div>
+        <div className="text-neutral-black font-family-display text-2xl font-bold">
+          Goal:{goal}
+        </div>
       </div>
-      <div className="text-2xl font-bold">{`${scoringResult.basePoints} x ${scoringResult.multiplier}`}</div>
-      <div className="text-2xl font-bold">{scoringResult.totalScore}</div>
+      <div className="font-family-display flex w-full items-center justify-stretch gap-2">
+        <div className="bg-orange-dark text-orange-light flex-1 rounded-sm p-2 text-right text-2xl font-bold">
+          {scoringResult.basePoints}
+        </div>
+        <div className="text-neutral-x-dark">x</div>
+        <div className="bg-green-dark text-green-light flex-1 rounded-sm p-2 text-right text-2xl font-bold">
+          {scoringResult.multiplier}
+        </div>
+      </div>
+      <div className="font-family-display bg-neutral-black w-full rounded-sm p-2 text-right text-2xl font-bold">
+        {scoringResult.totalScore}
+      </div>
       <div
         className={`flex min-h-12 min-w-48 items-center justify-center rounded-lg px-6 py-2 text-center text-2xl font-bold tracking-widest transition-colors ${
-          selectedWord.length === 0
-            ? "bg-blue-medium text-white"
-            : isValid
-              ? "bg-green-medium text-white"
-              : "bg-blue-medium text-white"
+          isValid ? "bg-green-medium" : "bg-neutral-dark"
         }`}
         aria-live="polite"
       >
@@ -231,7 +243,7 @@ export default function Grid() {
       </div>
 
       <div
-        className="grid touch-none grid-cols-5 gap-4"
+        className="bg-neutral-dark grid touch-none grid-cols-4 gap-4 rounded-lg p-2"
         onPointerUp={handlePointerUp}
         onPointerLeave={handlePointerUp}
       >
@@ -240,7 +252,7 @@ export default function Grid() {
             return (
               <div
                 key={i}
-                className="flex h-16 w-16 items-center justify-center rounded-lg bg-zinc-900/50"
+                className="bg-blue-medium flex size-16 items-center justify-center rounded-lg"
               />
             );
           }
@@ -248,20 +260,16 @@ export default function Grid() {
           const { points } =
             STARTING_TILES[letter as keyof typeof STARTING_TILES];
           const isSelected = selected.includes(i);
-          const selectionIndex = selected.indexOf(i);
-          const isLast = isSelected && selectionIndex === selected.length - 1;
 
           return (
             <div
               key={i}
               onPointerDown={() => handlePointerDown(i)}
               onPointerEnter={() => handlePointerEnter(i)}
-              className={`relative flex h-16 w-16 cursor-pointer items-center justify-center rounded-lg text-2xl font-bold transition-colors select-none ${
-                isLast
-                  ? "bg-indigo-500 text-white ring-2 ring-indigo-300"
-                  : isSelected
-                    ? "bg-indigo-600/70 text-white"
-                    : "bg-zinc-800 text-white hover:bg-zinc-700"
+              className={`bg-blue-medium text-neutral-white relative flex h-16 w-16 cursor-pointer items-center justify-center rounded-lg text-2xl font-bold transition-colors select-none ${
+                isSelected
+                  ? "ring-blue-dark ring-2 ring-offset-2"
+                  : "hover:bg-blue-dark"
               }`}
             >
               <span>{letter}</span>
@@ -274,12 +282,14 @@ export default function Grid() {
       </div>
 
       <button
-        className="rounded-lg bg-indigo-600 px-4 py-2 text-white hover:bg-indigo-700"
+        className="bg-green-dark text-green-light block w-full rounded-lg px-4 py-2 font-bold uppercase"
         onClick={handleSubmit}
       >
         Submit
       </button>
-      <button onClick={() => setSelected([])}>Clear</button>
+      <button className="text-neutral-black" onClick={() => setSelected([])}>
+        Clear
+      </button>
     </div>
   );
 }
