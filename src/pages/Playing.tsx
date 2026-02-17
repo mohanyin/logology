@@ -1,7 +1,7 @@
 import { useCallback, useRef, useState } from "react";
 import { useAtom } from "jotai";
 import { roundAtom } from "@/atoms/game";
-import Grid from "@/components/board/Grid";
+import Game from "@/components/board/Game";
 import PowerupsPanel from "@/components/powerups/PowerupsPanel";
 
 const SLIDE_COUNT = 2;
@@ -42,7 +42,7 @@ export default function PlayingPage() {
       >
         {/* Slide 1: Game Grid */}
         <div className="flex w-full flex-none snap-center items-center justify-center">
-          <Grid key={round} />
+          <Game key={round} />
         </div>
 
         {/* Slide 2: Active Powerups */}
