@@ -5,7 +5,7 @@ export const SCORE_SCALING_FACTOR = 1.75;
 
 export const SHOP_OPTIONS = 4;
 
-export const STARTING_GOLD = 10;
+export const STARTING_GOLD = 0;
 export const GOLD_PER_CHALLENGE = 10;
 export const GOLD_PER_REROLL = 2;
 export const GOLD_PER_REROLL_INCREASE = 1;

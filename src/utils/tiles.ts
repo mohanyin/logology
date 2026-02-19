@@ -35,12 +35,16 @@ export const STARTING_TILE_CONFIG = {
 } as const;
 
 export const createStartingTiles = (): Tile[] => {
-  return Object.entries(STARTING_TILE_CONFIG)
-    .flatMap(([letter, { count }]) =>
+  const tiles = Object.entries(STARTING_TILE_CONFIG).flatMap(
+    ([letter, { count }]) =>
       Array(count).fill({
         letter,
         points: STARTING_TILE_CONFIG[letter as Letter].points,
       }),
-    )
-    .sort(() => Math.random() - 0.5);
+  );
+  return shuffleTiles(tiles);
+};
+
+export const shuffleTiles = (tiles: Tile[]): Tile[] => {
+  return tiles.sort(() => Math.random() - 0.5);
 };

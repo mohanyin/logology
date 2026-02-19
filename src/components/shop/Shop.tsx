@@ -1,13 +1,6 @@
 import { useCallback, useMemo } from "react";
-import { useNavigate } from "@tanstack/react-router";
 import { useAtom } from "jotai";
-import {
-  goldAtom,
-  playedWordsAtom,
-  powerupsAtom,
-  roundAtom,
-  scoreAtom,
-} from "@/atoms/game";
+import { goldAtom, powerupsAtom, startGame } from "@/atoms/game";
 import { SHOP_OPTIONS, MAX_POWERUPS } from "@/utils/constants";
 import { createAllPowerups } from "@/powerups/index";
 import type { Powerup, Rarity } from "@/types/powerups";
@@ -46,10 +39,6 @@ const rarityColors: Record<
 export default function Shop() {
   const [gold, setGold] = useAtom(goldAtom);
   const [powerups, setPowerups] = useAtom(powerupsAtom);
-  const [, setRound] = useAtom(roundAtom);
-  const [, setScore] = useAtom(scoreAtom);
-  const [, setPlayedWords] = useAtom(playedWordsAtom);
-  const navigate = useNavigate();
 
   const shopChoices = useMemo(() => {
     const all = createAllPowerups();
@@ -71,13 +60,6 @@ export default function Shop() {
     },
     [gold, powerups.length, setGold, setPowerups],
   );
-
-  const handleContinue = useCallback(() => {
-    setRound((prev) => prev + 1);
-    setScore(0);
-    setPlayedWords([]);
-    navigate({ to: "/" });
-  }, [setRound, setScore, setPlayedWords, navigate]);
 
   return (
     <div className="flex h-full w-full flex-col items-center gap-6 px-4 py-8">
@@ -142,7 +124,7 @@ export default function Shop() {
       </div>
 
       <button
-        onClick={handleContinue}
+        onClick={startGame}
         className="bg-green-medium hover:bg-green-dark mt-4 rounded-lg px-8 py-3 text-lg font-bold text-white transition-colors"
       >
         Continue &rarr;

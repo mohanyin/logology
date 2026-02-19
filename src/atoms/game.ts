@@ -4,9 +4,10 @@ import {
   SCORE_SCALING_FACTOR,
   STARTING_GOLD,
 } from "@/utils/constants";
-import { atom } from "jotai";
+import { atom, createStore } from "jotai";
 import type { Powerup } from "@/types/powerups";
-import { createStartingTiles } from "@/utils/tiles";
+import { createStartingTiles, shuffleTiles } from "@/utils/tiles";
+import { router } from "@/router";
 
 export const roundAtom = atom(0);
 
@@ -17,6 +18,16 @@ export const wordsRemainingAtom = atom(BASE_ROUND_COUNT);
 export const goldAtom = atom(STARTING_GOLD);
 
 export const tilesAtom = atom(createStartingTiles());
+
+export const startGame = () => {
+  const store = createStore();
+  store.set(scoreAtom, 0);
+  store.set(wordsRemainingAtom, BASE_ROUND_COUNT);
+  store.set(tilesAtom, (prev) => shuffleTiles(prev));
+  store.set(roundAtom, (prev) => prev + 1);
+  store.set(playedWordsAtom, []);
+  router.navigate({ to: "/" });
+};
 
 export const remainingTilesAtom = atom((get) => {
   const tiles = get(tilesAtom);
