@@ -2,6 +2,7 @@ import {
   BASE_GOAL_SCORE,
   BASE_ROUND_COUNT,
   SCORE_SCALING_FACTOR,
+  SHUFFLES_PER_ROUND,
   STARTING_GOLD,
 } from "@/utils/constants";
 import { atom, createStore } from "jotai";
@@ -15,6 +16,8 @@ export const scoreAtom = atom(0);
 
 export const wordsRemainingAtom = atom(BASE_ROUND_COUNT);
 
+export const shufflesRemainingAtom = atom(SHUFFLES_PER_ROUND);
+
 export const goldAtom = atom(STARTING_GOLD);
 
 export const tilesAtom = atom(createStartingTiles());
@@ -23,6 +26,7 @@ export const startGame = () => {
   const store = createStore();
   store.set(scoreAtom, 0);
   store.set(wordsRemainingAtom, BASE_ROUND_COUNT);
+  store.set(shufflesRemainingAtom, SHUFFLES_PER_ROUND);
   store.set(tilesAtom, (prev) => shuffleTiles(prev));
   store.set(roundAtom, (prev) => prev + 1);
   store.set(playedWordsAtom, []);

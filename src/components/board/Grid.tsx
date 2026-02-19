@@ -22,6 +22,8 @@ interface GridProps {
   setSelected: React.Dispatch<React.SetStateAction<[number, number][]>>;
   wordsRemaining: number;
   onSubmit: () => void;
+  shufflesRemaining: number;
+  onShuffle: () => void;
 }
 
 export default function Grid({
@@ -30,6 +32,8 @@ export default function Grid({
   setSelected,
   wordsRemaining,
   onSubmit,
+  shufflesRemaining,
+  onShuffle,
 }: GridProps) {
   const isDragging = useRef(false);
   const hasDragged = useRef(false);
@@ -157,6 +161,13 @@ export default function Grid({
         onClick={onSubmit}
       >
         Submit ({wordsRemaining} left)
+      </button>
+      <button
+        className="bg-orange-dark text-orange-light block w-full rounded-lg px-4 py-2 font-bold uppercase disabled:opacity-50"
+        onClick={onShuffle}
+        disabled={shufflesRemaining <= 0}
+      >
+        Shuffle ({shufflesRemaining} left)
       </button>
       <button className="text-neutral-black" onClick={() => setSelected([])}>
         Clear

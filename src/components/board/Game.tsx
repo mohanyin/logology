@@ -9,13 +9,14 @@ import {
   playedWordsAtom,
   powerupsAtom,
   scoreAtom,
+  shufflesRemainingAtom,
   tilesAtom,
   wordsRemainingAtom,
 } from "@/atoms/game";
 import { scoreWord } from "@/utils/scoring";
 import { hasSound } from "@/utils/sounds";
 import type { GameContext } from "@/types/powerups";
-import { type Tile } from "@/utils/tiles";
+import { shuffleTiles, type Tile } from "@/utils/tiles";
 import Scoreboard from "@/components/board/Scoreboard";
 import Grid from "@/components/board/Grid";
 
@@ -77,6 +78,33 @@ export default function Game() {
       : scoreWord(selectedTiles, powerups, buildGameContext(1));
 
   const [wordsRemaining, setWordsRemaining] = useAtom(wordsRemainingAtom);
+  const [shufflesRemaining, setShufflesRemaining] = useAtom(
+    shufflesRemainingAtom,
+  );
+
+  const handleShuffle = () => {
+    if (shufflesRemaining <= 0) return;
+    setBoard((prev) => {
+      const positions: [number, number][] = [];
+      const nonNullTiles: Tile[] = [];
+      prev.forEach((row, i) =>
+        row.forEach((tile, j) => {
+          if (tile !== null) {
+            positions.push([i, j]);
+            nonNullTiles.push(tile);
+          }
+        }),
+      );
+      const shuffled = shuffleTiles(nonNullTiles);
+      const next = prev.map((row) => [...row]);
+      positions.forEach(([i, j], idx) => {
+        next[i][j] = shuffled[idx];
+      });
+      return next;
+    });
+    setSelected([]);
+    setShufflesRemaining((prev) => prev - 1);
+  };
 
   const handleSubmit = () => {
     if (!isValid) return;
@@ -119,6 +147,8 @@ export default function Game() {
         setSelected={setSelected}
         wordsRemaining={wordsRemaining}
         onSubmit={handleSubmit}
+        shufflesRemaining={shufflesRemaining}
+        onShuffle={handleShuffle}
       />
     </div>
   );

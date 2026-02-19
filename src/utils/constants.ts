@@ -14,5 +14,6 @@ export const GOLD_PER_TILE_IRON = 2;
 export const GOLD_PER_TILE_GOLD = 3;
 
 export const DISCARDS_PER_ROUND = 4;
+export const SHUFFLES_PER_ROUND = 4;
 
 export const MAX_POWERUPS = 8;
