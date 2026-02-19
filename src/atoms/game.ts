@@ -5,7 +5,7 @@ import {
   SHUFFLES_PER_ROUND,
   STARTING_GOLD,
 } from "@/utils/constants";
-import { atom, createStore } from "jotai";
+import { atom, getDefaultStore } from "jotai";
 import type { Powerup } from "@/types/powerups";
 import { createStartingTiles, shuffleTiles } from "@/utils/tiles";
 import { router } from "@/router";
@@ -23,7 +23,7 @@ export const goldAtom = atom(STARTING_GOLD);
 export const tilesAtom = atom(createStartingTiles());
 
 export const startGame = () => {
-  const store = createStore();
+  const store = getDefaultStore();
   store.set(scoreAtom, 0);
   store.set(wordsRemainingAtom, BASE_ROUND_COUNT);
   store.set(shufflesRemainingAtom, SHUFFLES_PER_ROUND);
