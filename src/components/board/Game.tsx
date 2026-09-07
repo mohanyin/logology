@@ -1,11 +1,12 @@
 import { useState } from "react";
 import { useNavigate } from "@tanstack/react-router";
-import { GOLD_PER_CHALLENGE } from "@/utils/constants";
+import { GOLD_PER_CHALLENGE, GRID_SIZE } from "@/utils/constants";
 import { useDictionary } from "@/hooks/useDictionary";
 import { useAtom } from "jotai";
 import {
   goalAtom,
   goldAtom,
+  nextTileAtom,
   playedWordsAtom,
   powerupsAtom,
   scoreAtom,
@@ -20,16 +21,14 @@ import { shuffleTiles, type Tile } from "@/utils/tiles";
 import Scoreboard from "@/components/board/Scoreboard";
 import Grid from "@/components/board/Grid";
 
-const GRID_SIZE = 4;
-
 export default function Game() {
   const [tiles] = useAtom(tilesAtom);
   const [board, setBoard] = useState<(Tile | null)[][]>(
     Array.from({ length: GRID_SIZE }, (_, i) =>
-      Array.from({ length: GRID_SIZE }, (_, j) => tiles[4 * i + j]),
+      Array.from({ length: GRID_SIZE }, (_, j) => tiles[GRID_SIZE * i + j]),
     ),
   );
-  const [nextTile, setNextTile] = useState(GRID_SIZE * GRID_SIZE);
+  const [nextTile, setNextTile] = useAtom(nextTileAtom);
 
   const [score, setScore] = useAtom(scoreAtom);
   const [goal] = useAtom(goalAtom);

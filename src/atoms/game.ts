@@ -1,6 +1,7 @@
 import {
   BASE_GOAL_SCORE,
   BASE_ROUND_COUNT,
+  BOARD_TILE_COUNT,
   SCORE_SCALING_FACTOR,
   SHUFFLES_PER_ROUND,
   STARTING_GOLD,
@@ -22,20 +23,26 @@ export const goldAtom = atom(STARTING_GOLD);
 
 export const tilesAtom = atom(createStartingTiles());
 
+/** Index of the next tile to be drawn from the bag. */
+export const nextTileAtom = atom(BOARD_TILE_COUNT);
+
 export const startGame = () => {
   const store = getDefaultStore();
   store.set(scoreAtom, 0);
   store.set(wordsRemainingAtom, BASE_ROUND_COUNT);
   store.set(shufflesRemainingAtom, SHUFFLES_PER_ROUND);
   store.set(tilesAtom, (prev) => shuffleTiles(prev));
+  store.set(nextTileAtom, BOARD_TILE_COUNT);
   store.set(roundAtom, (prev) => prev + 1);
   store.set(playedWordsAtom, []);
   router.navigate({ to: "/" });
 };
 
+/** Tiles still undrawn in the bag. */
 export const remainingTilesAtom = atom((get) => {
   const tiles = get(tilesAtom);
-  return tiles.length;
+  const nextTile = get(nextTileAtom);
+  return Math.max(0, tiles.length - nextTile);
 });
 
 /** Active powerups for the current game. Hardcoded for now. */

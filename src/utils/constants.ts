@@ -1,6 +1,9 @@
+export const GRID_SIZE = 4;
+export const BOARD_TILE_COUNT = GRID_SIZE * GRID_SIZE;
+
 export const BASE_ROUND_COUNT = 4;
 
-export const BASE_GOAL_SCORE = 50;
+export const BASE_GOAL_SCORE = 25;
 export const SCORE_SCALING_FACTOR = 1.75;
 
 export const SHOP_OPTIONS = 4;
