@@ -60,10 +60,12 @@ export default function Grid({
         if (prev.length === 0) return [tileCoords];
 
         // Re-touching a selected tile truncates back to it, so tapping the
-        // "E" in "SWEAR" leaves "SWE".
+        // "E" in "SWEAR" leaves "SWE". Touching the tip drops it instead,
+        // since truncating there would be a no-op.
         const prevIndex = prev.findIndex(([pi, pj]) => pi === i && pj === j);
         if (prevIndex !== -1) {
-          return prev.slice(0, prevIndex + 1);
+          const isTip = prevIndex === prev.length - 1;
+          return prev.slice(0, isTip ? prevIndex : prevIndex + 1);
         }
 
         // Reaching a non-adjacent tile breaks the chain: with a single tile
