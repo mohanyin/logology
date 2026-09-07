@@ -26,15 +26,32 @@ export const tilesAtom = atom(createStartingTiles());
 /** Index of the next tile to be drawn from the bag. */
 export const nextTileAtom = atom(BOARD_TILE_COUNT);
 
-export const startGame = () => {
+const resetRound = () => {
   const store = getDefaultStore();
   store.set(scoreAtom, 0);
   store.set(wordsRemainingAtom, BASE_ROUND_COUNT);
   store.set(shufflesRemainingAtom, SHUFFLES_PER_ROUND);
   store.set(tilesAtom, (prev) => shuffleTiles(prev));
   store.set(nextTileAtom, BOARD_TILE_COUNT);
-  store.set(roundAtom, (prev) => prev + 1);
   store.set(playedWordsAtom, []);
+};
+
+/** Advance to the next round, keeping gold and powerups. */
+export const startGame = () => {
+  const store = getDefaultStore();
+  resetRound();
+  store.set(roundAtom, (prev) => prev + 1);
+  router.navigate({ to: "/" });
+};
+
+/** Start a whole new run from round one, dropping gold and powerups. */
+export const restartRun = () => {
+  const store = getDefaultStore();
+  resetRound();
+  store.set(roundAtom, 0);
+  store.set(goldAtom, STARTING_GOLD);
+  store.set(powerupsAtom, []);
+  store.set(tilesAtom, createStartingTiles());
   router.navigate({ to: "/" });
 };
 

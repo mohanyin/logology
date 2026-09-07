@@ -6,6 +6,7 @@ import {
 import RootLayout from "@/components/layout/RootLayout";
 import PlayingPage from "@/pages/Playing";
 import ShopPage from "@/pages/Shop";
+import GameOverPage from "@/pages/GameOver";
 
 const rootRoute = createRootRoute({
   component: RootLayout,
@@ -23,7 +24,13 @@ const shopRoute = createRoute({
   component: ShopPage,
 });
 
-const routeTree = rootRoute.addChildren([indexRoute, shopRoute]);
+const gameOverRoute = createRoute({
+  getParentRoute: () => rootRoute,
+  path: "/game-over",
+  component: GameOverPage,
+});
+
+const routeTree = rootRoute.addChildren([indexRoute, shopRoute, gameOverRoute]);
 
 export const router = createRouter({ routeTree });
 

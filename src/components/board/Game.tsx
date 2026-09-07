@@ -1,4 +1,4 @@
-import { useMemo, useState } from "react";
+import { useEffect, useMemo, useState } from "react";
 import { useNavigate } from "@tanstack/react-router";
 import { GOLD_PER_CHALLENGE, GRID_SIZE } from "@/utils/constants";
 import { useDictionary } from "@/hooks/useDictionary";
@@ -66,6 +66,17 @@ export default function Game() {
       ? preview
       : ZERO_TOTALS;
 
+  // Every round ending routes from here: after a word commits, and on
+  // arrival at a board that is already won or already out of words (a
+  // browser back out of the shop, say). Clearing the goal wins even on the
+  // last word, so it is checked first. Waits for the score animation so the
+  // player sees the word that ended the round.
+  useEffect(() => {
+    if (isAnimating) return;
+    if (score >= goal) navigate({ to: "/shop" });
+    else if (wordsRemaining <= 0) navigate({ to: "/game-over" });
+  }, [isAnimating, score, goal, wordsRemaining, navigate]);
+
   const handleShuffle = () => {
     if (isAnimating || shufflesRemaining <= 0) return;
     setBoard((prev) => {
@@ -92,6 +103,7 @@ export default function Game() {
 
   const handleSubmit = () => {
     if (!isValid || isAnimating || selected.length === 0) return;
+    if (wordsRemaining <= 0) return;
 
     // Capture everything the commit needs. The board is locked for the
     // duration, so none of it can change underneath us.
@@ -139,10 +151,9 @@ export default function Game() {
       setSelected([]);
       setWordsRemaining((prev) => prev - 1);
 
-      if (newScore >= goal) {
-        setGold((prev) => prev + GOLD_PER_CHALLENGE);
-        navigate({ to: "/shop" });
-      }
+      // Clearing the goal wins the round even on the last word. Routing is
+      // left to the round-end effect below, so both paths agree.
+      if (newScore >= goal) setGold((prev) => prev + GOLD_PER_CHALLENGE);
     };
 
     // Nothing to animate — commit straight away rather than stalling on an
