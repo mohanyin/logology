@@ -1,7 +1,7 @@
-import type { Powerup } from "@/types/powerups";
+import type { Powerup, PowerupState } from "@/types/powerups";
 
-export default function createDecathlete(): Powerup {
-  let bonusMultiplier = 1.0;
+export default function createDecathlete(saved?: PowerupState): Powerup {
+  let bonusMultiplier = typeof saved === "number" ? saved : 1.0;
   const BONUS_PER_VERB = 0.1;
 
   return {
@@ -12,6 +12,7 @@ export default function createDecathlete(): Powerup {
     price: 8,
     tags: ["multiplier"],
     imagePath: "/powerups/decathlete.png",
+    getState: () => bonusMultiplier,
     onWordScored: (ctx) => {
       if (ctx.currentWord.isVerb) {
         bonusMultiplier += BONUS_PER_VERB;

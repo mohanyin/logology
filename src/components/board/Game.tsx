@@ -1,10 +1,11 @@
 import { useEffect, useMemo, useState } from "react";
 import { useNavigate } from "@tanstack/react-router";
-import { GOLD_PER_CHALLENGE, GRID_SIZE } from "@/utils/constants";
+import { GOLD_PER_CHALLENGE } from "@/utils/constants";
 import { useDictionary } from "@/hooks/useDictionary";
 import { useScoreSequencer } from "@/hooks/useScoreSequencer";
 import { useAtom } from "jotai";
 import {
+  boardAtom,
   goalAtom,
   goldAtom,
   nextTileAtom,
@@ -16,6 +17,7 @@ import {
   wordsRemainingAtom,
 } from "@/atoms/game";
 import { ZERO_TOTALS, buildScoreSequence, previewWord } from "@/utils/scoring";
+import { saveRun } from "@/utils/persistence";
 import { hasSound } from "@/utils/sounds";
 import type { GameContext } from "@/types/powerups";
 import { shuffleTiles, type Tile } from "@/utils/tiles";
@@ -24,11 +26,7 @@ import Grid from "@/components/board/Grid";
 
 export default function Game() {
   const [tiles] = useAtom(tilesAtom);
-  const [board, setBoard] = useState<(Tile | null)[][]>(
-    Array.from({ length: GRID_SIZE }, (_, i) =>
-      Array.from({ length: GRID_SIZE }, (_, j) => tiles[GRID_SIZE * i + j]),
-    ),
-  );
+  const [board, setBoard] = useAtom(boardAtom);
   const [nextTile, setNextTile] = useAtom(nextTileAtom);
 
   const [score, setScore] = useAtom(scoreAtom);
@@ -154,6 +152,10 @@ export default function Game() {
       // Clearing the goal wins the round even on the last word. Routing is
       // left to the round-end effect below, so both paths agree.
       if (newScore >= goal) setGold((prev) => prev + GOLD_PER_CHALLENGE);
+
+      // Save only once the word has fully landed, so refreshing mid-animation
+      // restores the pre-submit board rather than a half-scored word.
+      saveRun();
     };
 
     // Nothing to animate — commit straight away rather than stalling on an

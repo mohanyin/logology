@@ -6,6 +6,7 @@ import {
   roundAtom,
   scoreAtom,
 } from "@/atoms/game";
+import { saveRun } from "@/utils/persistence";
 
 export default function GameOver() {
   const [round] = useAtom(roundAtom);
@@ -51,7 +52,10 @@ export default function GameOver() {
       )}
 
       <button
-        onClick={restartRun}
+        onClick={() => {
+          restartRun();
+          saveRun();
+        }}
         className="bg-green-medium hover:bg-green-dark mt-4 rounded-lg px-8 py-3 text-lg font-bold text-white transition-colors"
       >
         Play again

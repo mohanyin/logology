@@ -5,6 +5,9 @@ export type PowerupEffect = {
   retrigger?: number;
 };
 
+/** The accumulated state of a powerup that changes over a run. */
+export type PowerupState = number | string;
+
 export type Rarity = "common" | "uncommon" | "rare" | "legendary";
 
 export type LetterDetails = {
@@ -41,6 +44,14 @@ export interface Powerup {
   price: number;
   tags: string[];
   imagePath: string;
+
+  /**
+   * Present only on powerups that accumulate state across a run. Read when
+   * saving so the value survives a reload; pass it back to the factory to
+   * restore. Powerups mutate their state in place, so there is no atom write
+   * to observe — this accessor is the only way to see it.
+   */
+  getState?: () => PowerupState;
 
   onWordScored?: (ctx: GameContext) => PowerupEffect | null;
   onLetterScored?: (

@@ -1,7 +1,7 @@
-import type { Powerup } from "@/types/powerups";
+import type { Powerup, PowerupState } from "@/types/powerups";
 
-export default function createCryptoBro(): Powerup {
-  let bonusGold = 1;
+export default function createCryptoBro(saved?: PowerupState): Powerup {
+  let bonusGold = typeof saved === "number" ? saved : 1;
   const BONUS_PER_CHALLENGE = 1;
 
   return {
@@ -12,6 +12,7 @@ export default function createCryptoBro(): Powerup {
     price: 8,
     tags: ["economy"],
     imagePath: "/powerups/crypto_bro.png",
+    getState: () => bonusGold,
     onChallengeCompleted: () => {
       const gold = bonusGold;
       bonusGold += BONUS_PER_CHALLENGE;

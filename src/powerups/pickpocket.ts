@@ -1,9 +1,9 @@
-import type { Powerup } from "@/types/powerups";
+import type { Powerup, PowerupState } from "@/types/powerups";
 import { STARTING_TILE_CONFIG } from "@/utils/tiles";
 
-export default function createPickpocket(): Powerup {
+export default function createPickpocket(saved?: PowerupState): Powerup {
   const allLetters = Object.keys(STARTING_TILE_CONFIG);
-  let bonusLetter = "D";
+  let bonusLetter = typeof saved === "string" ? saved : "D";
 
   function pickBonusLetter(): string {
     return allLetters[Math.floor(Math.random() * allLetters.length)];
@@ -17,6 +17,7 @@ export default function createPickpocket(): Powerup {
     price: 8,
     tags: ["economy"],
     imagePath: "/powerups/pickpocket.webp",
+    getState: () => bonusLetter,
     onLetterScored: (_ctx, details) => {
       if (details.letter === bonusLetter) {
         return { gold: details.points };

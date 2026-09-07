@@ -1,4 +1,4 @@
-import type { Powerup } from "@/types/powerups";
+import type { Powerup, PowerupState } from "@/types/powerups";
 
 // Parts of speech
 import librarianOfItems from "./librarianOfItems";
@@ -158,4 +158,44 @@ export function createAllPowerups(): Powerup[] {
     createAbyssalVoidTerror(),
     scholar,
   ];
+}
+
+/**
+ * Factories for the powerups that accumulate state, keyed by name so a saved
+ * run can rebuild one with its bonus intact.
+ */
+const STATEFUL_FACTORIES: Record<string, (saved?: PowerupState) => Powerup> = {
+  "The Gangster": createGangster,
+  "The Climber": createClimber,
+  "The Builder": createBuilder,
+  "The Sharpshooter": createSharpshooter,
+  "The Crypto Bro": createCryptoBro,
+  "The Pickpocket": createPickpocket,
+  "Dragon of Night Mountain": createDragonOfNightMountain,
+  "Abyssal Void Terror": createAbyssalVoidTerror,
+  Decathlete: createDecathlete,
+};
+
+let statelessByName: Map<string, Powerup> | null = null;
+
+/**
+ * Rebuilds a single powerup by name, restoring accumulated state where the
+ * powerup has any. Returns null for a name the registry no longer knows,
+ * which is how a save referencing a deleted powerup gets rejected.
+ */
+export function createPowerup(
+  name: string,
+  saved?: PowerupState,
+): Powerup | null {
+  const factory = STATEFUL_FACTORIES[name];
+  if (factory) return factory(saved);
+
+  if (!statelessByName) {
+    statelessByName = new Map(
+      createAllPowerups()
+        .filter((p) => !(p.name in STATEFUL_FACTORIES))
+        .map((p) => [p.name, p]),
+    );
+  }
+  return statelessByName.get(name) ?? null;
 }

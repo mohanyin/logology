@@ -1,9 +1,9 @@
-import type { Powerup } from "@/types/powerups";
+import type { Powerup, PowerupState } from "@/types/powerups";
 
 const BONUS_PER_WORD = 10;
 
-export default function createClimber(): Powerup {
-  let bonusPoints = 0;
+export default function createClimber(saved?: PowerupState): Powerup {
+  let bonusPoints = typeof saved === "number" ? saved : 0;
 
   return {
     name: "The Climber",
@@ -12,6 +12,7 @@ export default function createClimber(): Powerup {
     price: 8,
     tags: ["points"],
     imagePath: "/powerups/climber.jpg",
+    getState: () => bonusPoints,
     onWordScored: (ctx) => {
       if (ctx.currentWord.length === 5) {
         bonusPoints += BONUS_PER_WORD;

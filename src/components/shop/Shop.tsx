@@ -1,6 +1,12 @@
-import { useCallback, useMemo } from "react";
+import { useCallback, useEffect } from "react";
 import { useAtom } from "jotai";
-import { goldAtom, powerupsAtom, startGame } from "@/atoms/game";
+import {
+  goldAtom,
+  powerupsAtom,
+  shopOffersAtom,
+  startGame,
+} from "@/atoms/game";
+import { saveRun } from "@/utils/persistence";
 import { SHOP_OPTIONS, MAX_POWERUPS } from "@/utils/constants";
 import { createAllPowerups } from "@/powerups/index";
 import type { Powerup, Rarity } from "@/types/powerups";
@@ -40,16 +46,27 @@ export default function Shop() {
   const [gold, setGold] = useAtom(goldAtom);
   const [powerups, setPowerups] = useAtom(powerupsAtom);
 
-  const shopChoices = useMemo(() => {
+  const [shopChoices, setShopChoices] = useAtom(shopOffersAtom);
+
+  // Roll the offer once per visit and keep it in an atom, so a reload shows
+  // the same shop instead of handing out a free reroll.
+  useEffect(() => {
+    if (shopChoices) return;
     const all = createAllPowerups();
     const ownedNames = new Set(powerups.map((p) => p.name));
     const available = all.filter((p) => !ownedNames.has(p.name));
-    return pickRandom(
-      available.length >= SHOP_OPTIONS ? available : all,
-      SHOP_OPTIONS,
+    setShopChoices(
+      pickRandom(
+        available.length >= SHOP_OPTIONS ? available : all,
+        SHOP_OPTIONS,
+      ),
     );
+    // Persist the roll immediately — the run was last saved when the winning
+    // word committed, before this shop existed.
+    saveRun();
+    // Deliberately rolls once per visit, not on every powerup change.
     // eslint-disable-next-line react-hooks/exhaustive-deps
-  }, []);
+  }, [shopChoices]);
 
   const handleBuy = useCallback(
     (powerup: Powerup) => {
@@ -57,6 +74,7 @@ export default function Shop() {
       if (powerups.length >= MAX_POWERUPS) return;
       setGold((prev) => prev - powerup.price);
       setPowerups((prev) => [...prev, powerup]);
+      saveRun();
     },
     [gold, powerups.length, setGold, setPowerups],
   );
@@ -71,7 +89,7 @@ export default function Shop() {
       </div>
 
       <div className="flex w-full max-w-md flex-col gap-4">
-        {shopChoices.map((powerup, i) => {
+        {(shopChoices ?? []).map((powerup, i) => {
           const colors = rarityColors[powerup.rarity];
           const canAfford = gold >= powerup.price;
           const alreadyOwned = powerups.some((p) => p.name === powerup.name);
@@ -124,7 +142,10 @@ export default function Shop() {
       </div>
 
       <button
-        onClick={startGame}
+        onClick={() => {
+          startGame();
+          saveRun();
+        }}
         className="bg-green-medium hover:bg-green-dark mt-4 rounded-lg px-8 py-3 text-lg font-bold text-white transition-colors"
       >
         Continue &rarr;

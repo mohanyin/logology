@@ -1,4 +1,4 @@
-import type { Powerup } from "@/types/powerups";
+import type { Powerup, PowerupState } from "@/types/powerups";
 
 const OPTIONS = [
   "TREE",
@@ -19,8 +19,8 @@ function pickBonusWord(): string {
   return OPTIONS[Math.floor(Math.random() * OPTIONS.length)];
 }
 
-export default function createSharpshooter(): Powerup {
-  let bonusWord = pickBonusWord();
+export default function createSharpshooter(saved?: PowerupState): Powerup {
+  let bonusWord = typeof saved === "string" ? saved : pickBonusWord();
 
   return {
     name: "The Sharpshooter",
@@ -30,6 +30,7 @@ export default function createSharpshooter(): Powerup {
     price: 8,
     tags: ["multiplier"],
     imagePath: "/powerups/sharpshooter.jpg",
+    getState: () => bonusWord,
     onWordScored: (ctx) => {
       const word = ctx.currentWord.word.toUpperCase();
       const effect =

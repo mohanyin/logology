@@ -1,7 +1,9 @@
-import type { Powerup } from "@/types/powerups";
+import type { Powerup, PowerupState } from "@/types/powerups";
 
-export default function createDragonOfNightMountain(): Powerup {
-  let bonusMultiplier = 1.0;
+export default function createDragonOfNightMountain(
+  saved?: PowerupState,
+): Powerup {
+  let bonusMultiplier = typeof saved === "number" ? saved : 1.0;
   const BONUS_PER_TILE = 0.1;
 
   return {
@@ -12,6 +14,7 @@ export default function createDragonOfNightMountain(): Powerup {
     price: 8,
     tags: ["multiplier"],
     imagePath: "/powerups/dragon.png",
+    getState: () => bonusMultiplier,
     onTileBought: () => {
       bonusMultiplier += BONUS_PER_TILE;
       return null;

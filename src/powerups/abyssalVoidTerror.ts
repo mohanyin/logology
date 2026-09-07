@@ -1,7 +1,7 @@
-import type { Powerup } from "@/types/powerups";
+import type { Powerup, PowerupState } from "@/types/powerups";
 
-export default function createAbyssalVoidTerror(): Powerup {
-  let bonusMultiplier = 1.0;
+export default function createAbyssalVoidTerror(saved?: PowerupState): Powerup {
+  let bonusMultiplier = typeof saved === "number" ? saved : 1.0;
   const BONUS_PER_TEAMMATE = 0.5;
 
   return {
@@ -12,6 +12,7 @@ export default function createAbyssalVoidTerror(): Powerup {
     price: 8,
     tags: ["multiplier"],
     imagePath: "/powerups/void_terror.png",
+    getState: () => bonusMultiplier,
     onTeammateSold: () => {
       bonusMultiplier += BONUS_PER_TEAMMATE;
       return null;

@@ -1,9 +1,9 @@
-import type { Powerup } from "@/types/powerups";
+import type { Powerup, PowerupState } from "@/types/powerups";
 
 const BONUS_PER_WORD = 2;
 
-export default function createBuilder(): Powerup {
-  let bonusMultiplier = 0;
+export default function createBuilder(saved?: PowerupState): Powerup {
+  let bonusMultiplier = typeof saved === "number" ? saved : 0;
 
   return {
     name: "The Builder",
@@ -12,6 +12,7 @@ export default function createBuilder(): Powerup {
     price: 6,
     tags: ["multiplier"],
     imagePath: "/powerups/builder.jpg",
+    getState: () => bonusMultiplier,
     onWordScored: () => {
       bonusMultiplier += BONUS_PER_WORD;
       return { multiplier: bonusMultiplier };

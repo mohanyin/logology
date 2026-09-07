@@ -1,9 +1,9 @@
-import type { Powerup } from "@/types/powerups";
+import type { Powerup, PowerupState } from "@/types/powerups";
 
 const BONUS_PER_I = 5;
 
-export function createGangster(): Powerup {
-  let bonusPoints = 0;
+export function createGangster(saved?: PowerupState): Powerup {
+  let bonusPoints = typeof saved === "number" ? saved : 0;
 
   return {
     name: "The Gangster",
@@ -12,6 +12,7 @@ export function createGangster(): Powerup {
     price: 5,
     tags: ["points"],
     imagePath: "/powerups/gangster.jpeg",
+    getState: () => bonusPoints,
     onLetterScored: (_ctx, details) => {
       if (details.letter === "I") {
         bonusPoints += BONUS_PER_I;
