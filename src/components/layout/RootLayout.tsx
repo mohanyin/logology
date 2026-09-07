@@ -1,11 +1,11 @@
 import { Outlet } from "@tanstack/react-router";
-import { NeuroNoise } from "@paper-design/shaders-react";
+// import { NeuroNoise } from "@paper-design/shaders-react";
 
 export default function RootLayout() {
   return (
     <div className="relative flex h-dvh flex-col">
       <div className="fixed inset-0 -z-10">
-        <NeuroNoise
+        {/* <NeuroNoise
           width="100%"
           height="100%"
           colorFront="#fffef4"
@@ -14,7 +14,7 @@ export default function RootLayout() {
           brightness={0.05}
           contrast={0.3}
           speed={0.5}
-        />
+        /> */}
       </div>
       <Outlet />
     </div>

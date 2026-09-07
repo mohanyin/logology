@@ -1,5 +1,7 @@
 import { useCallback, useRef } from "react";
-import { type Tile } from "@/utils/tiles";
+import { type Tile as TileType } from "@/utils/tiles";
+import Button from "@/components/ui/Button";
+import Tile from "@/components/board/Tile";
 
 function isNeighbor(a: [number, number], b: [number, number]): boolean {
   const dRow = Math.abs(a[0] - b[0]);
@@ -17,7 +19,7 @@ function tileFromPoint(x: number, y: number): [number, number] | null {
 }
 
 interface GridProps {
-  board: (Tile | null)[][];
+  board: (TileType | null)[][];
   selected: [number, number][];
   setSelected: React.Dispatch<React.SetStateAction<[number, number][]>>;
   wordsRemaining: number;
@@ -112,7 +114,7 @@ export default function Grid({
   return (
     <>
       <div
-        className="bg-neutral-dark grid touch-none grid-cols-4 gap-4 rounded-lg p-2"
+        className="grid touch-none grid-cols-4 gap-4 rounded-lg p-2"
         onPointerDown={handlePointerDown}
         onPointerMove={handlePointerMove}
         onPointerUp={handlePointerUp}
@@ -124,11 +126,8 @@ export default function Grid({
               return (
                 <div
                   key={`${i}-${j}`}
-                  className="bg-blue-medium flex size-16 items-center justify-center rounded-lg"
-                >
-                  {i}
-                  {j}
-                </div>
+                  className="aspect-60/62 w-16 rounded-[4px] bg-[#1d1f35]/25"
+                />
               );
             }
 
@@ -140,38 +139,39 @@ export default function Grid({
               <div
                 key={`${i}-${j}`}
                 data-tile={`${i},${j}`}
-                className={`bg-blue-medium text-neutral-white relative flex h-16 w-16 cursor-pointer items-center justify-center rounded-lg text-2xl font-bold transition-colors select-none ${
-                  isSelected
-                    ? "ring-blue-dark ring-2 ring-offset-2"
-                    : "hover:bg-blue-dark"
-                }`}
+                className="aspect-60/62 w-16 cursor-pointer touch-none select-none"
               >
-                <span>{tile.letter}</span>
-                <span className="absolute bottom-1 text-[10px] font-normal text-zinc-400">
-                  {tile.points}
-                </span>
+                <Tile
+                  letter={tile.letter}
+                  points={tile.points}
+                  selected={isSelected}
+                />
               </div>
             );
           });
         })}
       </div>
 
-      <button
-        className="bg-green-dark text-green-light block w-full rounded-lg px-4 py-2 font-bold uppercase"
-        onClick={onSubmit}
-      >
-        Submit ({wordsRemaining} left)
-      </button>
-      <button
-        className="bg-orange-dark text-orange-light block w-full rounded-lg px-4 py-2 font-bold uppercase disabled:opacity-50"
-        onClick={onShuffle}
-        disabled={shufflesRemaining <= 0}
-      >
-        Shuffle ({shufflesRemaining} left)
-      </button>
-      <button className="text-neutral-black" onClick={() => setSelected([])}>
-        Clear
-      </button>
+      <div className="flex gap-2">
+        {selected.length > 0 ? (
+          <Button key="clear" color="blue" onClick={() => setSelected([])}>
+            Clear
+          </Button>
+        ) : (
+          <Button
+            key="shuffle"
+            color="orange"
+            count={shufflesRemaining}
+            onClick={onShuffle}
+            disabled={shufflesRemaining <= 0}
+          >
+            Shuffle
+          </Button>
+        )}
+        <Button color="green" count={wordsRemaining} onClick={onSubmit}>
+          Submit
+        </Button>
+      </div>
     </>
   );
 }

@@ -6,14 +6,23 @@
   --color-green-light: #b4fc41;
   --color-green-medium: #47a312;
   --color-green-dark: #2b5712;
+  --color-green-200: #fafcaa;
+  --color-green-400: #cac955;
+  --color-green-600: #3c6720;
 
   --color-blue-light: #abe0ff;
   --color-blue-medium: #1c59af;
   --color-blue-dark: #122c79;
+  --color-blue-200: #dbf4e7;
+  --color-blue-400: #92c5e2;
+  --color-blue-600: #2f6fa8;
 
   --color-orange-light: #ffce2c;
   --color-orange-medium: #a4721b;
   --color-orange-dark: #723d08;
+  --color-orange-200: #fff2b3;
+  --color-orange-400: #eaaa52;
+  --color-orange-600: #c75e32;
 
   --color-neutral-white: #fffef4;
   --color-neutral-light: #f0eee1;
@@ -27,6 +36,7 @@
 
   --font-family-sans: "Barlow Condensed", ui-sans-serif, system-ui, sans-serif;
   --font-family-display: "Pirata One", cursive;
+  --font-family-serif: "Texturina", ui-serif, Georgia, serif;
 }
 
 body {

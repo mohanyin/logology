@@ -1,4 +1,5 @@
 import type { GameContext, Powerup } from "@/types/powerups";
+import { isVowel } from "@/utils/tiles";
 
 export function scoreWord(
   tiles: { letter: string; points: number }[],
@@ -6,7 +7,7 @@ export function scoreWord(
   ctx: GameContext,
 ): { totalScore: number; basePoints: number; multiplier: number } {
   let basePoints = 0;
-  let multiplier = tiles.length;
+  let multiplier = 0;
 
   // 1. Apply starting bonuses
   for (const p of powerups) {
@@ -17,9 +18,14 @@ export function scoreWord(
     }
   }
 
-  // 2. Score each letter + run onLetterScored hooks
+  // 2. Score each letter: consonants add to base points, vowels add to the
+  //    multiplier. Then run onLetterScored hooks.
   for (let i = 0; i < tiles.length; i++) {
-    basePoints += tiles[i].points;
+    if (isVowel(tiles[i].letter)) {
+      multiplier += tiles[i].points;
+    } else {
+      basePoints += tiles[i].points;
+    }
     for (const p of powerups) {
       const fx = p.onLetterScored?.(ctx, {
         letter: tiles[i].letter,

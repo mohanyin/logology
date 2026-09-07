@@ -3,6 +3,11 @@ export interface Tile {
   points: number;
 }
 
+export const VOWELS = new Set(["A", "E", "I", "O", "U"]);
+
+export const isVowel = (letter: string): boolean =>
+  VOWELS.has(letter.toUpperCase());
+
 export type Letter = keyof typeof STARTING_TILE_CONFIG;
 
 export const STARTING_TILE_CONFIG = {
