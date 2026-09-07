@@ -1,6 +1,6 @@
 import { useEffect, useMemo, useState } from "react";
 import { useNavigate } from "@tanstack/react-router";
-import { GOLD_PER_CHALLENGE } from "@/utils/constants";
+import { GOLD_PER_CHALLENGE, GOLD_PER_WORD_REMAINING } from "@/utils/constants";
 import { useDictionary } from "@/hooks/useDictionary";
 import { useScoreSequencer } from "@/hooks/useScoreSequencer";
 import { useAtom } from "jotai";
@@ -150,8 +150,16 @@ export default function Game() {
       setWordsRemaining((prev) => prev - 1);
 
       // Clearing the goal wins the round even on the last word. Routing is
-      // left to the round-end effect below, so both paths agree.
-      if (newScore >= goal) setGold((prev) => prev + GOLD_PER_CHALLENGE);
+      // left to the round-end effect below, so both paths agree. The payout
+      // rewards finishing early: a flat base plus every word left unplayed,
+      // counting this one as spent.
+      if (newScore >= goal) {
+        const wordsLeft = wordsRemaining - 1;
+        setGold(
+          (prev) =>
+            prev + GOLD_PER_CHALLENGE + wordsLeft * GOLD_PER_WORD_REMAINING,
+        );
+      }
 
       // Save only once the word has fully landed, so refreshing mid-animation
       // restores the pre-submit board rather than a half-scored word.
@@ -199,6 +207,7 @@ export default function Game() {
         ready={ready}
         shakingPowerupIndex={shakingPowerupIndex}
         shakeId={sequencer.shakeId}
+        powerupsLocked={isAnimating}
       />
       <Grid
         board={board}

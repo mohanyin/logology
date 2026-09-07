@@ -14,7 +14,8 @@ import {
   SHOP_OPTIONS,
 } from "@/utils/constants";
 import { createAllPowerups } from "@/powerups/index";
-import type { Powerup, Rarity } from "@/types/powerups";
+import type { Powerup } from "@/types/powerups";
+import { rarityColors } from "@/utils/rarity";
 import Button from "@/components/ui/Button";
 import PowerupsRow from "@/components/powerups/PowerupsRow";
 
@@ -22,32 +23,6 @@ function pickRandom(pool: Powerup[], count: number): Powerup[] {
   const shuffled = [...pool].sort(() => Math.random() - 0.5);
   return shuffled.slice(0, count);
 }
-
-const rarityColors: Record<
-  Rarity,
-  { bg: string; border: string; badge: string }
-> = {
-  common: {
-    bg: "bg-neutral-black/60",
-    border: "border-neutral-x-dark/40",
-    badge: "bg-neutral-x-dark text-neutral-white",
-  },
-  uncommon: {
-    bg: "bg-green-dark/60",
-    border: "border-green-medium/40",
-    badge: "bg-green-medium text-white",
-  },
-  rare: {
-    bg: "bg-blue-dark/60",
-    border: "border-blue-medium/40",
-    badge: "bg-blue-medium text-white",
-  },
-  legendary: {
-    bg: "bg-orange-dark/60",
-    border: "border-orange-medium/40",
-    badge: "bg-orange-medium text-white",
-  },
-};
 
 export default function Shop() {
   const [gold, setGold] = useAtom(goldAtom);

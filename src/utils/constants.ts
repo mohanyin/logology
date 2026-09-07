@@ -9,7 +9,9 @@ export const SCORE_SCALING_FACTOR = 1.75;
 export const SHOP_OPTIONS = 4;
 
 export const STARTING_GOLD = 0;
-export const GOLD_PER_CHALLENGE = 10;
+/** Clearing a round pays a flat base plus a bonus per unused word. */
+export const GOLD_PER_CHALLENGE = 4;
+export const GOLD_PER_WORD_REMAINING = 1;
 export const GOLD_PER_REROLL = 2;
 export const GOLD_PER_REROLL_INCREASE = 1;
 export const GOLD_PER_TILE_BASE = 1;

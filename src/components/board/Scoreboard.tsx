@@ -12,6 +12,7 @@ interface ScoreboardProps {
   ready: boolean;
   shakingPowerupIndex: number | null;
   shakeId: string;
+  powerupsLocked: boolean;
 }
 
 export default function Scoreboard({
@@ -23,6 +24,7 @@ export default function Scoreboard({
   ready,
   shakingPowerupIndex,
   shakeId,
+  powerupsLocked,
 }: ScoreboardProps) {
   return (
     <>
@@ -30,6 +32,7 @@ export default function Scoreboard({
       <PowerupsRow
         shakingPowerupIndex={shakingPowerupIndex}
         shakeId={shakeId}
+        disabled={powerupsLocked}
       />
       <ScoreBreakdown
         basePoints={basePoints}

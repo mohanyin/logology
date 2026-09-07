@@ -1,32 +1,34 @@
 import { useShake } from "@/hooks/useShake";
-import type { Powerup, Rarity } from "@/types/powerups";
-
-const rarityColors: Record<Rarity, { bg: string; border: string }> = {
-  common: { bg: "bg-neutral-black/60", border: "border-neutral-x-dark/40" },
-  uncommon: { bg: "bg-green-dark/60", border: "border-green-medium/40" },
-  rare: { bg: "bg-blue-dark/60", border: "border-blue-medium/40" },
-  legendary: { bg: "bg-orange-dark/60", border: "border-orange-medium/40" },
-};
+import type { Powerup } from "@/types/powerups";
+import { rarityColors } from "@/utils/rarity";
 
 interface PowerupIconProps {
   powerup: Powerup;
   shaking: boolean;
   shakeId: string;
+  onClick?: () => void;
+  disabled?: boolean;
 }
 
 export default function PowerupIcon({
   powerup,
   shaking,
   shakeId,
+  onClick,
+  disabled = false,
 }: PowerupIconProps) {
-  const ref = useShake<HTMLDivElement>(shaking, shakeId);
+  const ref = useShake<HTMLButtonElement>(shaking, shakeId);
   const colors = rarityColors[powerup.rarity];
 
   return (
-    <div
+    <button
       ref={ref}
+      type="button"
+      onClick={onClick}
+      disabled={disabled}
+      aria-label={`${powerup.name} — ${powerup.description}`}
       title={`${powerup.name} — ${powerup.description}`}
-      className={`flex size-12 shrink-0 items-center justify-center rounded-lg border ${colors.border} ${colors.bg} backdrop-blur-sm`}
+      className={`flex size-12 shrink-0 items-center justify-center rounded-lg border ${colors.border} ${colors.bg} backdrop-blur-sm enabled:cursor-pointer`}
     >
       <img
         src={powerup.imagePath}
@@ -36,6 +38,6 @@ export default function PowerupIcon({
           (e.target as HTMLImageElement).style.display = "none";
         }}
       />
-    </div>
+    </button>
   );
 }
