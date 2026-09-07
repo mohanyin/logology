@@ -60,5 +60,4 @@ export interface Powerup {
     ctx: GameContext,
     teammate: Powerup,
   ) => PowerupEffect | null;
-  getStartingBonus?: (ctx: GameContext) => PowerupEffect | null;
 }

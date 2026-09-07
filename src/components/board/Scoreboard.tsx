@@ -10,6 +10,8 @@ interface ScoreboardProps {
   selectedWord: string;
   isValid: boolean;
   ready: boolean;
+  shakingPowerupIndex: number | null;
+  shakeId: string;
 }
 
 export default function Scoreboard({
@@ -19,11 +21,16 @@ export default function Scoreboard({
   selectedWord,
   isValid,
   ready,
+  shakingPowerupIndex,
+  shakeId,
 }: ScoreboardProps) {
   return (
     <>
       <ScoreHeader />
-      <PowerupsRow />
+      <PowerupsRow
+        shakingPowerupIndex={shakingPowerupIndex}
+        shakeId={shakeId}
+      />
       <ScoreBreakdown
         basePoints={basePoints}
         multiplier={multiplier}

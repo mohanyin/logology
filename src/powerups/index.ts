@@ -63,7 +63,6 @@ import defenseMinister from "./defenseMinister";
 import createClimber from "./climber";
 import createBuilder from "./builder";
 import createSharpshooter from "./sharpshooter";
-import createMe from "./me";
 
 // Economic
 import gambler from "./gambler";
@@ -145,7 +144,6 @@ export function createAllPowerups(): Powerup[] {
     createClimber(),
     createBuilder(),
     createSharpshooter(),
-    createMe(),
     // Economic
     gambler,
     oilTycoon,

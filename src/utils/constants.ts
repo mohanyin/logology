@@ -20,3 +20,14 @@ export const DISCARDS_PER_ROUND = 4;
 export const SHUFFLES_PER_ROUND = 4;
 
 export const MAX_POWERUPS = 8;
+
+/** Scoring animation: each step lasts DECAY x the previous, down to MIN. */
+export const SCORE_STEP_BASE_MS = 250;
+export const SCORE_STEP_DECAY = 0.8;
+export const SCORE_STEP_MIN_MS = 50;
+/** Beat held after the last step, before the score is committed. */
+export const SCORE_SEQUENCE_HOLD_MS = 400;
+export const SHAKE_DURATION_MS = 180;
+
+/** Safety cap so a misbehaving retrigger powerup cannot stall a word. */
+export const MAX_RETRIGGERS_PER_LETTER = 16;

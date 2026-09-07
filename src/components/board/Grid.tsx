@@ -1,7 +1,7 @@
 import { useCallback, useRef } from "react";
 import { type Tile as TileType } from "@/utils/tiles";
 import Button from "@/components/ui/Button";
-import Tile from "@/components/board/Tile";
+import GridCell from "@/components/board/GridCell";
 
 function isNeighbor(a: [number, number], b: [number, number]): boolean {
   const dRow = Math.abs(a[0] - b[0]);
@@ -26,6 +26,11 @@ interface GridProps {
   onSubmit: () => void;
   shufflesRemaining: number;
   onShuffle: () => void;
+  /** True while a score animation is playing; blocks all board input. */
+  locked: boolean;
+  /** Board coords ("row,col") shaking on the current step. */
+  shakeCells: string[];
+  shakeId: string;
 }
 
 export default function Grid({
@@ -36,6 +41,9 @@ export default function Grid({
   onSubmit,
   shufflesRemaining,
   onShuffle,
+  locked,
+  shakeCells,
+  shakeId,
 }: GridProps) {
   const isDragging = useRef(false);
   const hasDragged = useRef(false);
@@ -71,20 +79,25 @@ export default function Grid({
     [board, setSelected],
   );
 
-  const handlePointerDown = useCallback((e: React.PointerEvent) => {
-    isDragging.current = true;
-    hasDragged.current = false;
+  const handlePointerDown = useCallback(
+    (e: React.PointerEvent) => {
+      if (locked) return;
 
-    const coords = tileFromPoint(e.clientX, e.clientY);
-    if (!coords) return;
+      isDragging.current = true;
+      hasDragged.current = false;
 
-    startTile.current = coords;
-    lastTile.current = coords.toString();
-  }, []);
+      const coords = tileFromPoint(e.clientX, e.clientY);
+      if (!coords) return;
+
+      startTile.current = coords;
+      lastTile.current = coords.toString();
+    },
+    [locked],
+  );
 
   const handlePointerMove = useCallback(
     (e: React.PointerEvent) => {
-      if (!isDragging.current) return;
+      if (locked || !isDragging.current) return;
 
       const coords = tileFromPoint(e.clientX, e.clientY);
       if (!coords) return;
@@ -100,7 +113,7 @@ export default function Grid({
       lastTile.current = key;
       selectTile(coords);
     },
-    [selectTile, setSelected],
+    [locked, selectTile, setSelected],
   );
 
   const handlePointerUp = useCallback(() => {
@@ -139,17 +152,15 @@ export default function Grid({
             );
 
             return (
-              <div
+              <GridCell
                 key={`${i}-${j}`}
-                data-tile={`${i},${j}`}
-                className="aspect-60/62 w-16 cursor-pointer touch-none select-none"
-              >
-                <Tile
-                  letter={tile.letter}
-                  points={tile.points}
-                  selected={isSelected}
-                />
-              </div>
+                tile={tile}
+                row={i}
+                col={j}
+                selected={isSelected}
+                shaking={shakeCells.includes(`${i},${j}`)}
+                shakeId={shakeId}
+              />
             );
           });
         })}
@@ -157,7 +168,12 @@ export default function Grid({
 
       <div className="flex gap-2">
         {selected.length > 0 ? (
-          <Button key="clear" color="blue" onClick={() => setSelected([])}>
+          <Button
+            key="clear"
+            color="blue"
+            onClick={() => setSelected([])}
+            disabled={locked}
+          >
             Clear
           </Button>
         ) : (
@@ -166,12 +182,17 @@ export default function Grid({
             color="orange"
             count={shufflesRemaining}
             onClick={onShuffle}
-            disabled={shufflesRemaining <= 0}
+            disabled={locked || shufflesRemaining <= 0}
           >
             Shuffle
           </Button>
         )}
-        <Button color="green" count={wordsRemaining} onClick={onSubmit}>
+        <Button
+          color="green"
+          count={wordsRemaining}
+          onClick={onSubmit}
+          disabled={locked}
+        >
           Submit
         </Button>
       </div>
