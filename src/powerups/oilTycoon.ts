@@ -1,5 +1,4 @@
 import type { Powerup } from "@/types/powerups";
-import { NO_EFFECT } from "@/types/powerups";
 
 const VOWELS = "AEIOU";
 
@@ -20,7 +19,7 @@ const oilTycoon: Powerup = {
   imagePath: "/powerups/oil_tycoon.jpg",
   onWordScored: (ctx) => {
     if (hasConsecutiveVowels(ctx.currentWord.word)) return { gold: 2 };
-    return NO_EFFECT;
+    return null;
   },
 };
 

@@ -1,5 +1,4 @@
 import type { Powerup } from "@/types/powerups";
-import { NO_EFFECT } from "@/types/powerups";
 
 function isPalindrome(word: string): boolean {
   const w = word.toUpperCase();
@@ -19,7 +18,7 @@ const translator: Powerup = {
   onWordScored: (ctx) => {
     if (isPalindrome(ctx.currentWord.word))
       return { multiplier: ctx.currentWord.multiplier };
-    return NO_EFFECT;
+    return null;
   },
 };
 

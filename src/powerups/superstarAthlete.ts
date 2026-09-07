@@ -1,5 +1,4 @@
 import type { Powerup } from "@/types/powerups";
-import { NO_EFFECT } from "@/types/powerups";
 
 const superstarAthlete: Powerup = {
   name: "Superstar Athlete",
@@ -10,7 +9,7 @@ const superstarAthlete: Powerup = {
   imagePath: "/powerups/superstar_athlete.webp",
   onChallengeCompleted: (ctx) => {
     if (ctx.playedWords.length === 1) return { gold: 10 };
-    return NO_EFFECT;
+    return null;
   },
 };
 

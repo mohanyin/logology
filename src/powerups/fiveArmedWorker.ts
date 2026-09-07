@@ -1,5 +1,4 @@
 import type { Powerup } from "@/types/powerups";
-import { NO_EFFECT } from "@/types/powerups";
 
 const fiveArmedWorker: Powerup = {
   name: "Five-armed Worker",
@@ -10,7 +9,7 @@ const fiveArmedWorker: Powerup = {
   imagePath: "/powerups/five_armed_worker.jpeg",
   onWordScored: (ctx) => {
     if (ctx.currentWord.length === 5) return { points: 75 };
-    return NO_EFFECT;
+    return null;
   },
 };
 

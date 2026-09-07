@@ -1,5 +1,4 @@
 import type { Powerup } from "@/types/powerups";
-import { NO_EFFECT } from "@/types/powerups";
 
 const walkingRolodex: Powerup = {
   name: "Walking Rolodex",
@@ -12,7 +11,7 @@ const walkingRolodex: Powerup = {
   onWordScored: (ctx) => {
     const word = ctx.currentWord.word;
     for (let i = 1; i < word.length; i++) {
-      if (word[i] < word[i - 1]) return NO_EFFECT;
+      if (word[i] < word[i - 1]) return null;
     }
     return { multiplier: ctx.currentWord.multiplier };
   },

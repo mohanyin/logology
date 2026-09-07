@@ -1,5 +1,4 @@
 import type { Powerup } from "@/types/powerups";
-import { NO_EFFECT } from "@/types/powerups";
 
 export default function createDragonOfNightMountain(): Powerup {
   let bonusMultiplier = 1.0;
@@ -15,7 +14,7 @@ export default function createDragonOfNightMountain(): Powerup {
     imagePath: "/powerups/dragon.png",
     onTileBought: () => {
       bonusMultiplier += BONUS_PER_TILE;
-      return NO_EFFECT;
+      return null;
     },
     onWordScored: () => {
       return { multiplier: bonusMultiplier };

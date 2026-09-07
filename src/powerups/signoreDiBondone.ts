@@ -1,5 +1,4 @@
 import type { Powerup } from "@/types/powerups";
-import { NO_EFFECT } from "@/types/powerups";
 
 const signoreDiBondone: Powerup = {
   name: "Signore di Bondone",
@@ -11,7 +10,7 @@ const signoreDiBondone: Powerup = {
   onWordScored: (ctx) => {
     if (ctx.currentWord.isGerund)
       return { multiplier: ctx.currentWord.multiplier * 2 };
-    return NO_EFFECT;
+    return null;
   },
 };
 

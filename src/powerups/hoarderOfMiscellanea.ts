@@ -1,5 +1,4 @@
 import type { Powerup } from "@/types/powerups";
-import { NO_EFFECT } from "@/types/powerups";
 
 const hoarderOfMiscellanea: Powerup = {
   name: "Hoarder of Miscellanea",
@@ -13,7 +12,7 @@ const hoarderOfMiscellanea: Powerup = {
     const { isNoun, isVerb, isAdjective, isAdverb } = ctx.currentWord;
     if (!isNoun && !isVerb && !isAdjective && !isAdverb)
       return { multiplier: 25 };
-    return NO_EFFECT;
+    return null;
   },
 };
 

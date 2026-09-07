@@ -1,5 +1,4 @@
 import type { Powerup } from "@/types/powerups";
-import { NO_EFFECT } from "@/types/powerups";
 
 export default function createAbyssalVoidTerror(): Powerup {
   let bonusMultiplier = 1.0;
@@ -15,7 +14,7 @@ export default function createAbyssalVoidTerror(): Powerup {
     imagePath: "/powerups/void_terror.png",
     onTeammateSold: () => {
       bonusMultiplier += BONUS_PER_TEAMMATE;
-      return NO_EFFECT;
+      return null;
     },
     onWordScored: () => {
       return { multiplier: bonusMultiplier };

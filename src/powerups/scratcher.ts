@@ -1,5 +1,4 @@
 import type { Powerup } from "@/types/powerups";
-import { NO_EFFECT } from "@/types/powerups";
 
 const VOWELS = "AEIOU";
 
@@ -25,7 +24,7 @@ const scratcher: Powerup = {
     const chance = 0.25 * (1 + vowelCount);
     if (Math.random() < chance)
       return { multiplier: ctx.currentWord.multiplier };
-    return NO_EFFECT;
+    return null;
   },
 };
 

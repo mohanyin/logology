@@ -1,5 +1,4 @@
 import type { Powerup } from "@/types/powerups";
-import { NO_EFFECT } from "@/types/powerups";
 
 const DIPHTHONGS = ["ai", "au", "ei", "eu", "oi", "ou", "ui", "ue"];
 
@@ -17,7 +16,7 @@ const mixer: Powerup = {
   imagePath: "/powerups/mixer.png",
   onWordScored: (ctx) => {
     if (hasDiphthong(ctx.currentWord.word)) return { multiplier: 25 };
-    return NO_EFFECT;
+    return null;
   },
 };
 

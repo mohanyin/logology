@@ -1,5 +1,4 @@
 import type { Powerup } from "@/types/powerups";
-import { NO_EFFECT } from "@/types/powerups";
 
 const FORBIDDEN = ["I", "O", "U"];
 
@@ -17,7 +16,7 @@ const creditAgency: Powerup = {
   imagePath: "/powerups/credit_agency.png",
   onWordScored: (ctx) => {
     if (avoidsLetters(ctx.currentWord.word)) return { multiplier: 2 };
-    return NO_EFFECT;
+    return null;
   },
 };
 

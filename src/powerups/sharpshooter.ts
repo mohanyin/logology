@@ -1,5 +1,4 @@
 import type { Powerup } from "@/types/powerups";
-import { NO_EFFECT } from "@/types/powerups";
 
 const OPTIONS = [
   "TREE",
@@ -36,7 +35,7 @@ export default function createSharpshooter(): Powerup {
       const effect =
         word !== bonusWord
           ? { multiplier: ctx.currentWord.multiplier * 4 }
-          : NO_EFFECT;
+          : null;
       bonusWord = pickBonusWord();
       return effect;
     },

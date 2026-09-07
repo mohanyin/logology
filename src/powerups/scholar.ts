@@ -1,5 +1,4 @@
 import type { Powerup } from "@/types/powerups";
-import { NO_EFFECT } from "@/types/powerups";
 
 const VOWELS = "AEIOU";
 
@@ -14,7 +13,7 @@ const scholar: Powerup = {
     if (VOWELS.includes(tile.letter)) {
       return { letter: "A" } as never; // tile mutation handled by caller
     }
-    return NO_EFFECT;
+    return null;
   },
 };
 

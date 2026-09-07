@@ -1,5 +1,4 @@
 import type { Powerup } from "@/types/powerups";
-import { NO_EFFECT } from "@/types/powerups";
 
 const archivistOfDescriptions: Powerup = {
   name: "Archivist of Descriptions",
@@ -11,7 +10,7 @@ const archivistOfDescriptions: Powerup = {
   onWordScored: (ctx) => {
     if (ctx.currentWord.isAdjective || ctx.currentWord.isAdverb)
       return { multiplier: 20 };
-    return NO_EFFECT;
+    return null;
   },
 };
 

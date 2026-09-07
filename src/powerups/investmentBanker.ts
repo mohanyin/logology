@@ -1,5 +1,4 @@
 import type { Powerup } from "@/types/powerups";
-import { NO_EFFECT } from "@/types/powerups";
 
 const investmentBanker: Powerup = {
   name: "Investment Banker",
@@ -11,7 +10,7 @@ const investmentBanker: Powerup = {
   onChallengeCompleted: (ctx) => {
     const earned = Math.floor(ctx.character.gold * 0.2);
     if (earned > 0) return { gold: earned };
-    return NO_EFFECT;
+    return null;
   },
 };
 

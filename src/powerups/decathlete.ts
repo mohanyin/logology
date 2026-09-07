@@ -1,5 +1,4 @@
 import type { Powerup } from "@/types/powerups";
-import { NO_EFFECT } from "@/types/powerups";
 
 export default function createDecathlete(): Powerup {
   let bonusMultiplier = 1.0;
@@ -18,7 +17,7 @@ export default function createDecathlete(): Powerup {
         bonusMultiplier += BONUS_PER_VERB;
         return { multiplier: bonusMultiplier };
       }
-      return NO_EFFECT;
+      return null;
     },
   };
 }

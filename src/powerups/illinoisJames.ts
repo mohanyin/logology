@@ -1,5 +1,4 @@
 import type { Powerup } from "@/types/powerups";
-import { NO_EFFECT } from "@/types/powerups";
 
 const illinoisJames: Powerup = {
   name: "Illinois James",
@@ -11,7 +10,7 @@ const illinoisJames: Powerup = {
   onWordScored: (ctx) => {
     if (ctx.currentWord.isPastTense && ctx.currentWord.isVerb)
       return { points: 100 };
-    return NO_EFFECT;
+    return null;
   },
 };
 

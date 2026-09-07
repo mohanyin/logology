@@ -1,5 +1,4 @@
 import type { Powerup } from "@/types/powerups";
-import { NO_EFFECT } from "@/types/powerups";
 
 const VOWELS = "AEIOU";
 
@@ -14,7 +13,7 @@ const congaLine: Powerup = {
     const first = ctx.currentWord.word[0]?.toUpperCase();
     if (first && VOWELS.includes(first))
       return { multiplier: ctx.currentWord.multiplier };
-    return NO_EFFECT;
+    return null;
   },
 };
 

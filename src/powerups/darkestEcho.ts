@@ -1,5 +1,4 @@
 import type { Powerup } from "@/types/powerups";
-import { NO_EFFECT } from "@/types/powerups";
 
 const VOWELS = "AEIOU";
 
@@ -12,7 +11,7 @@ const darkestEcho: Powerup = {
   imagePath: "/powerups/darkest_echo.png",
   onLetterScored: (_ctx, details) => {
     if (VOWELS.includes(details.letter)) return { retrigger: 1 };
-    return NO_EFFECT;
+    return null;
   },
 };
 

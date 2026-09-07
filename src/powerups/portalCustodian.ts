@@ -1,5 +1,4 @@
 import type { Powerup } from "@/types/powerups";
-import { NO_EFFECT } from "@/types/powerups";
 
 const portalCustodian: Powerup = {
   name: "Portal Custodian",
@@ -10,7 +9,7 @@ const portalCustodian: Powerup = {
   imagePath: "/powerups/portal_custodian.png",
   onWordScored: (ctx) => {
     if (ctx.currentWord.hasSound("long_o")) return { points: 50 };
-    return NO_EFFECT;
+    return null;
   },
 };
 

@@ -1,5 +1,4 @@
 import type { Powerup } from "@/types/powerups";
-import { NO_EFFECT } from "@/types/powerups";
 
 const middleManager: Powerup = {
   name: "Middle Manager",
@@ -11,7 +10,7 @@ const middleManager: Powerup = {
   onChallengeCompleted: (ctx) => {
     const earned = Math.floor(ctx.character.powerups.length / 2);
     if (earned > 0) return { gold: earned };
-    return NO_EFFECT;
+    return null;
   },
 };
 

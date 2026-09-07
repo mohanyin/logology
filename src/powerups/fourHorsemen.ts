@@ -1,5 +1,4 @@
 import type { Powerup } from "@/types/powerups";
-import { NO_EFFECT } from "@/types/powerups";
 
 const fourHorsemen: Powerup = {
   name: "The Four Horsemen",
@@ -11,7 +10,7 @@ const fourHorsemen: Powerup = {
   onWordScored: (ctx) => {
     if (ctx.currentWord.length === 4)
       return { multiplier: ctx.currentWord.multiplier };
-    return NO_EFFECT;
+    return null;
   },
 };
 

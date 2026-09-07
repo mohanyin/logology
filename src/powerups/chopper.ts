@@ -1,5 +1,4 @@
 import type { Powerup } from "@/types/powerups";
-import { NO_EFFECT } from "@/types/powerups";
 
 const FIRST_HALF_LETTERS = "ABCDEFGHIJKLM";
 
@@ -12,7 +11,7 @@ const chopper: Powerup = {
   imagePath: "/powerups/chopper.jpg",
   onLetterScored: (_ctx, details) => {
     if (FIRST_HALF_LETTERS.includes(details.letter)) return { points: 10 };
-    return NO_EFFECT;
+    return null;
   },
 };
 

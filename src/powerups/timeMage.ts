@@ -1,5 +1,4 @@
 import type { Powerup } from "@/types/powerups";
-import { NO_EFFECT } from "@/types/powerups";
 
 const timeMage: Powerup = {
   name: "Time Mage",
@@ -12,7 +11,7 @@ const timeMage: Powerup = {
   onWordScored: (ctx) => {
     const reversed = ctx.currentWord.word.split("").reverse().join("");
     if (ctx.isValidWord(reversed)) return { points: 100 };
-    return NO_EFFECT;
+    return null;
   },
 };
 

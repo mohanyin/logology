@@ -1,5 +1,4 @@
 import type { Powerup } from "@/types/powerups";
-import { NO_EFFECT } from "@/types/powerups";
 
 const leonardo: Powerup = {
   name: "Leonardo",
@@ -11,7 +10,7 @@ const leonardo: Powerup = {
   onWordScored: (ctx) => {
     if (ctx.currentWord.isAdjective)
       return { multiplier: ctx.currentWord.multiplier * 2 };
-    return NO_EFFECT;
+    return null;
   },
 };
 

@@ -1,5 +1,4 @@
 import type { Powerup } from "@/types/powerups";
-import { NO_EFFECT } from "@/types/powerups";
 
 const RARE_LETTERS = ["Q", "X", "J", "K", "Z"];
 
@@ -14,7 +13,7 @@ const hipster: Powerup = {
   onLetterScored: (ctx, details) => {
     if (RARE_LETTERS.includes(details.letter))
       return { multiplier: ctx.currentWord.multiplier };
-    return NO_EFFECT;
+    return null;
   },
 };
 

@@ -1,5 +1,4 @@
 import type { Powerup } from "@/types/powerups";
-import { NO_EFFECT } from "@/types/powerups";
 
 const NATO_WORDS = [
   "ALPHA",
@@ -42,7 +41,7 @@ const defenseMinister: Powerup = {
     const word = ctx.currentWord.word.toUpperCase();
     if (NATO_WORDS.includes(word))
       return { multiplier: ctx.currentWord.multiplier * 2 };
-    return NO_EFFECT;
+    return null;
   },
 };
 

@@ -1,5 +1,4 @@
 import type { Powerup } from "@/types/powerups";
-import { NO_EFFECT } from "@/types/powerups";
 
 const pinballWizard: Powerup = {
   name: "Pinball Wizard",
@@ -10,7 +9,7 @@ const pinballWizard: Powerup = {
   imagePath: "/powerups/pinball_wizard.png",
   onLetterScored: (_ctx, details) => {
     if ("BONUS".includes(details.letter)) return { multiplier: 8 };
-    return NO_EFFECT;
+    return null;
   },
 };
 

@@ -1,5 +1,4 @@
 import type { Powerup } from "@/types/powerups";
-import { NO_EFFECT } from "@/types/powerups";
 
 const pantheon: Powerup = {
   name: "The Pantheon",
@@ -11,7 +10,7 @@ const pantheon: Powerup = {
   onWordScored: (ctx) => {
     if (ctx.currentWord.length >= 6)
       return { multiplier: 3 * ctx.currentWord.multiplier };
-    return NO_EFFECT;
+    return null;
   },
 };
 

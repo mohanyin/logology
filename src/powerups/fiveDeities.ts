@@ -1,5 +1,4 @@
 import type { Powerup } from "@/types/powerups";
-import { NO_EFFECT } from "@/types/powerups";
 
 const fiveDeities: Powerup = {
   name: "The Five Deities",
@@ -11,7 +10,7 @@ const fiveDeities: Powerup = {
   onWordScored: (ctx) => {
     if (ctx.currentWord.length === 5)
       return { multiplier: 2 * ctx.currentWord.multiplier };
-    return NO_EFFECT;
+    return null;
   },
 };
 

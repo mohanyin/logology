@@ -1,5 +1,4 @@
 import type { Powerup } from "@/types/powerups";
-import { NO_EFFECT } from "@/types/powerups";
 
 const oldFortyNiner: Powerup = {
   name: "Old Forty-Niner",
@@ -11,7 +10,7 @@ const oldFortyNiner: Powerup = {
   onWordScored: (ctx) => {
     if (ctx.currentWord.isNoun && ctx.currentWord.partsOfSpeech.length === 1)
       return { multiplier: 30 };
-    return NO_EFFECT;
+    return null;
   },
 };
 

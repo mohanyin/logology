@@ -1,5 +1,4 @@
 import type { Powerup } from "@/types/powerups";
-import { NO_EFFECT } from "@/types/powerups";
 
 const fiveEyedAssistant: Powerup = {
   name: "Five-eyed Assistant",
@@ -10,7 +9,7 @@ const fiveEyedAssistant: Powerup = {
   imagePath: "/powerups/five_eyed_assistant.jpeg",
   onWordScored: (ctx) => {
     if (ctx.currentWord.length === 5) return { multiplier: 20 };
-    return NO_EFFECT;
+    return null;
   },
 };
 

@@ -1,5 +1,4 @@
 import type { Powerup } from "@/types/powerups";
-import { NO_EFFECT } from "@/types/powerups";
 import { STARTING_TILE_CONFIG } from "@/utils/tiles";
 
 export default function createPickpocket(): Powerup {
@@ -22,11 +21,11 @@ export default function createPickpocket(): Powerup {
       if (details.letter === bonusLetter) {
         return { gold: details.points };
       }
-      return NO_EFFECT;
+      return null;
     },
     onWordScored: () => {
       bonusLetter = pickBonusLetter();
-      return NO_EFFECT;
+      return null;
     },
   };
 }

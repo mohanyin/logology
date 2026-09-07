@@ -1,5 +1,4 @@
 import type { Powerup } from "@/types/powerups";
-import { NO_EFFECT } from "@/types/powerups";
 
 export default function createMe(): Powerup {
   let lettersPlayed = 0;
@@ -16,14 +15,14 @@ export default function createMe(): Powerup {
     getStartingBonus: () => {
       const mult = Math.floor(lettersPlayed / 10);
       if (mult > 0) return { multiplier: mult };
-      return NO_EFFECT;
+      return null;
     },
     onLetterScored: () => {
       return { points: BONUS_POINTS };
     },
     onWordScored: (ctx) => {
       lettersPlayed += ctx.currentWord.length;
-      return NO_EFFECT;
+      return null;
     },
   };
 }

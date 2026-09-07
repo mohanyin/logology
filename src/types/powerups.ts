@@ -5,8 +5,6 @@ export type PowerupEffect = {
   retrigger?: number;
 };
 
-export const NO_EFFECT: PowerupEffect = {};
-
 export type Rarity = "common" | "uncommon" | "rare" | "legendary";
 
 export type LetterDetails = {
@@ -44,11 +42,23 @@ export interface Powerup {
   tags: string[];
   imagePath: string;
 
-  onWordScored?: (ctx: GameContext) => PowerupEffect;
-  onLetterScored?: (ctx: GameContext, details: LetterDetails) => PowerupEffect;
-  onTileDrawn?: (ctx: GameContext, tile: { letter: string }) => PowerupEffect;
-  onChallengeCompleted?: (ctx: GameContext) => PowerupEffect;
-  onTileBought?: (ctx: GameContext, tile: { letter: string }) => PowerupEffect;
-  onTeammateSold?: (ctx: GameContext, teammate: Powerup) => PowerupEffect;
-  getStartingBonus?: (ctx: GameContext) => PowerupEffect;
+  onWordScored?: (ctx: GameContext) => PowerupEffect | null;
+  onLetterScored?: (
+    ctx: GameContext,
+    details: LetterDetails,
+  ) => PowerupEffect | null;
+  onTileDrawn?: (
+    ctx: GameContext,
+    tile: { letter: string },
+  ) => PowerupEffect | null;
+  onChallengeCompleted?: (ctx: GameContext) => PowerupEffect | null;
+  onTileBought?: (
+    ctx: GameContext,
+    tile: { letter: string },
+  ) => PowerupEffect | null;
+  onTeammateSold?: (
+    ctx: GameContext,
+    teammate: Powerup,
+  ) => PowerupEffect | null;
+  getStartingBonus?: (ctx: GameContext) => PowerupEffect | null;
 }

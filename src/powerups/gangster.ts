@@ -1,5 +1,4 @@
 import type { Powerup } from "@/types/powerups";
-import { NO_EFFECT } from "@/types/powerups";
 
 const BONUS_PER_I = 5;
 
@@ -18,7 +17,7 @@ export function createGangster(): Powerup {
         bonusPoints += BONUS_PER_I;
         return { points: bonusPoints };
       }
-      return NO_EFFECT;
+      return null;
     },
   };
 }

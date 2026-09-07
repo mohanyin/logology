@@ -1,5 +1,4 @@
 import type { Powerup } from "@/types/powerups";
-import { NO_EFFECT } from "@/types/powerups";
 
 const collectorOfActions: Powerup = {
   name: "Collector of Actions",
@@ -10,7 +9,7 @@ const collectorOfActions: Powerup = {
   imagePath: "/powerups/collector_of_actions.png",
   onWordScored: (ctx) => {
     if (ctx.currentWord.isVerb) return { multiplier: 15 };
-    return NO_EFFECT;
+    return null;
   },
 };
 

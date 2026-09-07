@@ -1,5 +1,4 @@
 import type { Powerup } from "@/types/powerups";
-import { NO_EFFECT } from "@/types/powerups";
 
 const CONSONANTS = "BCDFGHJKLMNPQRSTVWXYZ";
 
@@ -20,7 +19,7 @@ const backToBackDuo: Powerup = {
   imagePath: "/powerups/back_to_back_duo.jpg",
   onWordScored: (ctx) => {
     if (hasConsecutiveConsonants(ctx.currentWord.word)) return { points: 50 };
-    return NO_EFFECT;
+    return null;
   },
 };
 

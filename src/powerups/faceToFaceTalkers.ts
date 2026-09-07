@@ -1,5 +1,4 @@
 import type { Powerup } from "@/types/powerups";
-import { NO_EFFECT } from "@/types/powerups";
 
 const VOWELS = "AEIOU";
 
@@ -20,7 +19,7 @@ const faceToFaceTalkers: Powerup = {
   imagePath: "/powerups/face_to_face_talkers.jpg",
   onWordScored: (ctx) => {
     if (hasConsecutiveVowels(ctx.currentWord.word)) return { points: 75 };
-    return NO_EFFECT;
+    return null;
   },
 };
 
