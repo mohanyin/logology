@@ -5,6 +5,7 @@ import {
   nextTileAtom,
   playedWordsAtom,
   powerupsAtom,
+  rerollCostAtom,
   roundAtom,
   scoreAtom,
   shopOffersAtom,
@@ -17,7 +18,7 @@ import type { PowerupState } from "@/types/powerups";
 import { BOARD_TILE_COUNT, GRID_SIZE } from "@/utils/constants";
 import type { Tile } from "@/utils/tiles";
 
-const SAVE_VERSION = 1;
+const SAVE_VERSION = 2;
 const STORAGE_KEY = "logology.run";
 
 interface SavedPowerup {
@@ -40,6 +41,7 @@ interface SavedRun {
   /** Ordered — scoring reports powerups by index into this array. */
   powerups: SavedPowerup[];
   shopOffers: string[] | null;
+  rerollCost: number;
 }
 
 /**
@@ -69,6 +71,7 @@ export function saveRun(): void {
       state: p.getState?.(),
     })),
     shopOffers: offers ? offers.map((p) => p.name) : null,
+    rerollCost: store.get(rerollCostAtom),
   };
 
   try {
@@ -111,6 +114,7 @@ function parse(raw: string): SavedRun | null {
     run.wordsRemaining,
     run.shufflesRemaining,
     run.nextTile,
+    run.rerollCost,
   ];
   if (!numbers.every((n) => Number.isFinite(n))) return null;
 
@@ -179,6 +183,7 @@ export function loadRun(): boolean {
   store.set(playedWordsAtom, run.playedWords);
   store.set(powerupsAtom, powerups);
   store.set(shopOffersAtom, run.shopOffers ? offers : null);
+  store.set(rerollCostAtom, run.rerollCost);
 
   const board = [];
   for (let i = 0; i < run.board.length; i += GRID_SIZE) {

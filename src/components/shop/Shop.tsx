@@ -3,13 +3,20 @@ import { useAtom } from "jotai";
 import {
   goldAtom,
   powerupsAtom,
+  rerollCostAtom,
   shopOffersAtom,
   startGame,
 } from "@/atoms/game";
 import { saveRun } from "@/utils/persistence";
-import { SHOP_OPTIONS, MAX_POWERUPS } from "@/utils/constants";
+import {
+  GOLD_PER_REROLL_INCREASE,
+  MAX_POWERUPS,
+  SHOP_OPTIONS,
+} from "@/utils/constants";
 import { createAllPowerups } from "@/powerups/index";
 import type { Powerup, Rarity } from "@/types/powerups";
+import Button from "@/components/ui/Button";
+import PowerupsRow from "@/components/powerups/PowerupsRow";
 
 function pickRandom(pool: Powerup[], count: number): Powerup[] {
   const shuffled = [...pool].sort(() => Math.random() - 0.5);
@@ -47,11 +54,9 @@ export default function Shop() {
   const [powerups, setPowerups] = useAtom(powerupsAtom);
 
   const [shopChoices, setShopChoices] = useAtom(shopOffersAtom);
+  const [rerollCost, setRerollCost] = useAtom(rerollCostAtom);
 
-  // Roll the offer once per visit and keep it in an atom, so a reload shows
-  // the same shop instead of handing out a free reroll.
-  useEffect(() => {
-    if (shopChoices) return;
+  const rollOffers = useCallback(() => {
     const all = createAllPowerups();
     const ownedNames = new Set(powerups.map((p) => p.name));
     const available = all.filter((p) => !ownedNames.has(p.name));
@@ -61,12 +66,27 @@ export default function Shop() {
         SHOP_OPTIONS,
       ),
     );
-    // Persist the roll immediately — the run was last saved when the winning
-    // word committed, before this shop existed.
+  }, [powerups, setShopChoices]);
+
+  // Roll once per visit and keep the result in an atom, so a reload shows the
+  // same shop instead of handing out a free restock.
+  useEffect(() => {
+    if (shopChoices) return;
+    rollOffers();
+    // Persist immediately — the run was last saved when the winning word
+    // committed, before this shop existed.
     saveRun();
     // Deliberately rolls once per visit, not on every powerup change.
     // eslint-disable-next-line react-hooks/exhaustive-deps
   }, [shopChoices]);
+
+  const handleRestock = useCallback(() => {
+    if (gold < rerollCost) return;
+    setGold((prev) => prev - rerollCost);
+    setRerollCost((prev) => prev + GOLD_PER_REROLL_INCREASE);
+    rollOffers();
+    saveRun();
+  }, [gold, rerollCost, rollOffers, setGold, setRerollCost]);
 
   const handleBuy = useCallback(
     (powerup: Powerup) => {
@@ -87,6 +107,8 @@ export default function Shop() {
         <span className="text-orange-medium text-xl font-bold">{gold}g</span>
         <span className="text-neutral-x-dark text-sm">available</span>
       </div>
+
+      <PowerupsRow />
 
       <div className="flex w-full max-w-md flex-col gap-4">
         {(shopChoices ?? []).map((powerup, i) => {
@@ -141,15 +163,25 @@ export default function Shop() {
         })}
       </div>
 
-      <button
-        onClick={() => {
-          startGame();
-          saveRun();
-        }}
-        className="bg-green-medium hover:bg-green-dark mt-4 rounded-lg px-8 py-3 text-lg font-bold text-white transition-colors"
-      >
-        Continue &rarr;
-      </button>
+      <div className="mt-4 flex w-full max-w-md gap-2">
+        <Button
+          color="orange"
+          count={rerollCost}
+          onClick={handleRestock}
+          disabled={gold < rerollCost}
+        >
+          Restock
+        </Button>
+        <Button
+          color="green"
+          onClick={() => {
+            startGame();
+            saveRun();
+          }}
+        >
+          Continue
+        </Button>
+      </div>
     </div>
   );
 }

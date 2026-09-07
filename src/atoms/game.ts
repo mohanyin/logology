@@ -2,6 +2,7 @@ import {
   BASE_GOAL_SCORE,
   BASE_ROUND_COUNT,
   BOARD_TILE_COUNT,
+  GOLD_PER_REROLL,
   GRID_SIZE,
   SCORE_SCALING_FACTOR,
   SHUFFLES_PER_ROUND,
@@ -48,6 +49,9 @@ export const boardAtom = atom<(Tile | null)[][]>(dealBoard(initialTiles));
 /** The powerups this shop visit is offering, so a reload cannot reroll them. */
 export const shopOffersAtom = atom<Powerup[] | null>(null);
 
+/** Price of the next restock. Climbs per reroll, resets each shop visit. */
+export const rerollCostAtom = atom(GOLD_PER_REROLL);
+
 const resetRound = () => {
   const store = getDefaultStore();
   store.set(scoreAtom, 0);
@@ -59,6 +63,7 @@ const resetRound = () => {
   store.set(boardAtom, dealBoard(tiles));
   store.set(playedWordsAtom, []);
   store.set(shopOffersAtom, null);
+  store.set(rerollCostAtom, GOLD_PER_REROLL);
 };
 
 /** Advance to the next round, keeping gold and powerups. */

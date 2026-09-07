@@ -3,13 +3,14 @@ import { powerupsAtom } from "@/atoms/game";
 import PowerupIcon from "@/components/powerups/PowerupIcon";
 
 interface PowerupsRowProps {
-  shakingPowerupIndex: number | null;
-  shakeId: string;
+  /** Only the board animates powerups; elsewhere the row is static. */
+  shakingPowerupIndex?: number | null;
+  shakeId?: string;
 }
 
 export default function PowerupsRow({
-  shakingPowerupIndex,
-  shakeId,
+  shakingPowerupIndex = null,
+  shakeId = "",
 }: PowerupsRowProps) {
   const [powerups] = useAtom(powerupsAtom);
 
