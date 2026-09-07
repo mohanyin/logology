@@ -51,16 +51,19 @@ export default function Grid({
 
         if (prev.length === 0) return [tileCoords];
 
+        // Re-touching a selected tile truncates back to it, so tapping the
+        // "E" in "SWEAR" leaves "SWE".
         const prevIndex = prev.findIndex(([pi, pj]) => pi === i && pj === j);
         if (prevIndex !== -1) {
-          if (prevIndex === prev.length - 2) {
-            return prev.slice(0, -1);
-          }
-          return prev;
+          return prev.slice(0, prevIndex + 1);
         }
 
+        // Reaching a non-adjacent tile breaks the chain: with a single tile
+        // selected there is no word to protect, so restart there instead.
         const last = prev[prev.length - 1];
-        if (!isNeighbor(last, tileCoords)) return prev;
+        if (!isNeighbor(last, tileCoords)) {
+          return prev.length === 1 ? [tileCoords] : prev;
+        }
 
         return [...prev, [i, j]];
       });
