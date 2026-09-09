@@ -87,12 +87,15 @@ export const restartRun = () => {
   router.navigate({ to: "/" });
 };
 
-/** Tiles still undrawn in the bag. */
-export const remainingTilesAtom = atom((get) => {
-  const tiles = get(tilesAtom);
-  const nextTile = get(nextTileAtom);
-  return Math.max(0, tiles.length - nextTile);
-});
+/** The tiles still undrawn, in the order they will be dealt. */
+export const remainingTileListAtom = atom((get) =>
+  get(tilesAtom).slice(get(nextTileAtom)),
+);
+
+/** How many tiles are still undrawn. */
+export const remainingTilesAtom = atom(
+  (get) => get(remainingTileListAtom).length,
+);
 
 /** Active powerups for the current game. Hardcoded for now. */
 export const powerupsAtom = atom<Powerup[]>([]);

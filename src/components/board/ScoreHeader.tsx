@@ -1,3 +1,4 @@
+import { useState } from "react";
 import { useAtom } from "jotai";
 import {
   goalAtom,
@@ -5,12 +6,14 @@ import {
   remainingTilesAtom,
   scoreAtom,
 } from "@/atoms/game";
+import TilesModal from "@/components/board/TilesModal";
 
 export default function ScoreHeader() {
   const [score] = useAtom(scoreAtom);
   const [goal] = useAtom(goalAtom);
   const [gold] = useAtom(goldAtom);
   const [tilesRemaining] = useAtom(remainingTilesAtom);
+  const [showTiles, setShowTiles] = useState(false);
 
   return (
     <div className="flex w-full flex-wrap items-center justify-between gap-x-4 gap-y-2">
@@ -31,16 +34,20 @@ export default function ScoreHeader() {
           {gold}
         </span>
 
-        <span
-          className="flex items-center gap-1.5 rounded-sm border border-blue-400 bg-blue-200 px-2 py-1 text-blue-600"
-          aria-label={`${tilesRemaining} tiles left in the bag`}
+        <button
+          type="button"
+          onClick={() => setShowTiles(true)}
+          className="flex cursor-pointer items-center gap-1.5 rounded-sm border border-blue-400 bg-blue-200 px-2 py-1 text-blue-600"
+          aria-label={`${tilesRemaining} tiles left in the bag. Show them.`}
         >
           <span aria-hidden="true" className="text-base leading-none">
             &#9642;
           </span>
           {tilesRemaining}
-        </span>
+        </button>
       </div>
+
+      {showTiles && <TilesModal onClose={() => setShowTiles(false)} />}
     </div>
   );
 }
